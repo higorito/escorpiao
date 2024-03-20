@@ -1,5 +1,5 @@
 import 'package:escorpionico_proj/src/pages/maps_page/ubs_model.dart';
-import 'package:escorpionico_proj/src/pages/maps_page/ubs_repository.dart';
+import 'package:escorpionico_proj/src/pages/maps_place/ubs_repository.dart';
 import 'package:flutter/material.dart';
 
 class UbsController extends ChangeNotifier {

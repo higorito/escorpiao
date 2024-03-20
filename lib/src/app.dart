@@ -15,7 +15,7 @@ class AppPage extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'App',
-      theme: AppTheme.lightTheme,
+      theme: AppTheme.lightTheme, 
       home: const MapsPlace());
   }
 }
