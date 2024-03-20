@@ -37,8 +37,13 @@ dependencies:
   cupertino_icons: ^1.0.2
   validatorless: ^1.2.3
   font_awesome_flutter: ^10.7.0
-  flutter_modular: ^6.3.2
+  flutter_modular: ^5.0.3
   triple: ^2.1.0
+  dio: ^5.4.1
+  flutter_triple: ^3.0.0
+  provider: ^6.1.2
+  google_maps_flutter: ^2.5.3
+  location: ^5.0.3
 
 dev_dependencies:
   flutter_test:
