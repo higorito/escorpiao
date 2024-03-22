@@ -1,5 +1,9 @@
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:permission_handler/permission_handler.dart'
@@ -22,14 +26,14 @@ class _MapsPlaceState extends State<MapsPlace> {
 
   LatLng? posAtual;
 
-  late final GoogleMapController _mapController;
+  // late final GoogleMapController _mapController;
 
   Map<String, Marker> _markers = {};
 
-  static const destino = LatLng(-20.014471165111992, -45.97834020445445);
-  static const bambui = LatLng(-20.014442652072827, -45.976337386374325);
+  // static const destino = LatLng(-20.014471165111992, -45.97834020445445);
+  // static const bambui = LatLng(-20.014442652072827, -45.976337386374325);
 
-  static const pos_default = LatLng(-20.01163940586836, -45.97828215465096);
+  // static const pos_default = LatLng(-20.01163940586836, -45.97828215465096);
 
   MapType _tipoMapa = MapType.normal;
 
@@ -38,16 +42,49 @@ class _MapsPlaceState extends State<MapsPlace> {
   late PermissionStatus _permissionGranted;
   late LocationData _locationData;
 
-  final TextEditingController _searchController = TextEditingController();
-
-  CustomInfoWindowController _customInfoWindowController =
+  final CustomInfoWindowController _customInfoWindowController =
       CustomInfoWindowController();
+
+  final List<Marker> escorpiaoMarker = [];
+
+  final List<Marker> ubsMarker = [];
+
+  List<String> images = [
+    'assets/icons/ubs.png',
+    'assets/icons/scorpion.png',
+    'assets/icons/sinal-de-alerta.png'
+    'assets/icons/homem.png'
+  ];
+
+  final List<LatLng> localAvistado = [
+    const LatLng(-20.014590160341797, -45.98005804062814),
+    const LatLng(-20.01059074560931, -45.97601834533593),
+    const LatLng(-20.012303737314173, -45.970747217929684),
+    const LatLng(-20.00966248795663, -45.97842906392004),
+    const LatLng(-20.016457062657167, -45.97222779734214),
+    const LatLng(-20.015090898017174, -45.977450327874834),
+    const LatLng(-20.017600053158354, -45.9804094910854),
+    const LatLng(-20.013590160341797, -45.98005804062814),
+    const LatLng(-20.01059074560931, -45.97601834533593),
+    const LatLng(-20.012303737314173, -45.970747217929684),
+  ];
+
+  var isEscorpiao = false;
+
+  GlobalKey<FormState> dialogFormKey = GlobalKey<FormState>();
+
+  final MarkerDataSet ubsData = MarkerDataSet();
+
+  BitmapDescriptor customIcon = BitmapDescriptor.defaultMarker;
+  
 
   @override
   void initState() {
     super.initState();
     _checkLocationPermission();
-    _loadData();
+    addCustomMarkerYou();
+    createMarkersUbs(ubsData);
+    createMarkersEscorpioes(localAvistado);
     WidgetsBinding.instance
         .addPostFrameCallback((_) async => await fetchLocationUpdate());
   }
@@ -55,8 +92,45 @@ class _MapsPlaceState extends State<MapsPlace> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: Drawer(
+        child: ListView(
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Text(
+                'Menu',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
+            ),
+            ListTile(
+              title: const Text('Inicio'),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: const Text('Sobre'),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: const Text('Sair'),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+      ),
       appBar: AppBar(
-        title: const Text('Ubs Disponíveis'),
+        title: const Text('Mapa de Bambuí'),
+        centerTitle: true,
       ),
       body: posAtual == null
           ? const Center(
@@ -66,58 +140,6 @@ class _MapsPlaceState extends State<MapsPlace> {
               children: [
                 Column(
                   children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            controller: _searchController,
-                            textCapitalization: TextCapitalization.words,
-                            decoration: InputDecoration(
-                              hintText: 'Pesquisar Ubs',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              suffixIcon: IconButton(
-                                onPressed: () async {
-                                  //colcoar num controller dps
-                                  final place = await UbsRepository()
-                                      .getUbs(_searchController.text);
-
-                                  if (place != null) {
-                                    _goPlace(place);
-                                  } else {
-                                    void _showDialog() {
-                                      showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          return AlertDialog(
-                                            title: const Text('Erro'),
-                                            content: const Text(
-                                                'Nenhum lugar encontrado'),
-                                            actions: <Widget>[
-                                              TextButton(
-                                                onPressed: () {
-                                                  Navigator.of(context).pop();
-                                                },
-                                                child: const Text('OK'),
-                                              ),
-                                            ],
-                                          );
-                                        },
-                                      );
-                                    }
-                                  }
-                                },
-                                icon: const Icon(Icons.search),
-                              ),
-                            ),
-                            onChanged: (value) {
-                              print('PESQUISA--------$value-----------');
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
                     Expanded(
                       child: Stack(
                         children: [
@@ -138,9 +160,28 @@ class _MapsPlaceState extends State<MapsPlace> {
                                   controller;
                               // addMarkers('TESTE', destino, false);
                               // addMarkers('bambui cidade boa', bambui, false);
-                              addMarkers('VOCE', posAtual!, true);
+                              // addMarkers('VOCE', posAtual!, true, '');
                             },
-                            markers: _markers.values.toSet(),
+                            
+                            markers:
+                            isEscorpiao?
+                             {
+                              Marker(
+                                markerId: const MarkerId('voce'),
+                                position: posAtual!,
+                                icon: customIcon,
+                                
+                              ),
+                              ...ubsMarker,
+                              ...escorpiaoMarker,
+                            }: {
+                              Marker(
+                                markerId: const MarkerId('voce'),
+                                position: posAtual!,
+                                icon: customIcon,
+                              ),
+                              ...ubsMarker,
+                            },
                             mapType: _tipoMapa,
                             onTap: (position) {
                               _customInfoWindowController.hideInfoWindow!();
@@ -150,7 +191,7 @@ class _MapsPlaceState extends State<MapsPlace> {
                               controller: _customInfoWindowController,
                               height: 200,
                               width: 250,
-                              offset: 50),
+                              offset: 25),
                         ],
                       ),
                     ),
@@ -158,10 +199,11 @@ class _MapsPlaceState extends State<MapsPlace> {
                 ),
                 Positioned(
                   bottom: 10,
-                  right: 10,
+                  left: 10,
                   child: FloatingActionButton(
                     onPressed: () {
-                      _customInfoWindowController.googleMapController!.animateCamera(
+                      _customInfoWindowController.googleMapController!
+                          .animateCamera(
                         CameraUpdate.newCameraPosition(
                           CameraPosition(
                             target: posAtual!,
@@ -188,28 +230,75 @@ class _MapsPlaceState extends State<MapsPlace> {
                         height: 20,
                       ),
                       FloatingActionButton(
-                        onPressed: _addMarker,
+                        onPressed: () {
+                          showDialog(
+                            useSafeArea: true,
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text('Filtrar por'),
+                                content: Form(
+                                  key: dialogFormKey,
+                                  child: SizedBox(
+                                    child: Container(
+                                      constraints: const BoxConstraints.expand(
+                                        height: 200,
+                                      ),
+                                      child: Column(
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Checkbox(
+                                                  value: false,
+                                                  onChanged: (value) {}),
+                                              const Text(
+                                                  'Avistamento de escorpião'),
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Checkbox(
+                                                  value: false,
+                                                  onChanged: (value) {}),
+                                              const Text(
+                                                  'Acidentes com escorpião'),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text('OK'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
                         child: const Icon(
                           Icons.add_location_alt_rounded,
                           color: Colors.red,
                         ),
                       ),
-                      // const SizedBox(
-                      //   height: 20,
-                      // ),
-                      // FloatingActionButton(
-                      //   onPressed: _novaPos,
-                      //   child: const Icon(
-                      //     Icons.access_time_rounded,
-                      //   ),
-                      // ),
-                      // const SizedBox(
-                      //   height: 20,
-                      // ),
-                      // FloatingActionButton(
-                      //   onPressed: _goPosDefault,
-                      //   child: const Icon(Icons.restore),
-                      // ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      FloatingActionButton(
+                        onPressed: () {
+                          setState(() {
+                            isEscorpiao = !isEscorpiao;
+                          });
+                        },
+                        child: const Icon(
+                          Icons.filter_alt,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -218,7 +307,7 @@ class _MapsPlaceState extends State<MapsPlace> {
     );
   }
 
-  addMarkers(String mkID, LatLng position, bool vc) async {
+  addMarkers(String mkID, LatLng position, bool vc, String image) async {
     // var markerIcon = await BitmapDescriptor.fromAssetImage(const ImageConfiguration(size: Size(1, 1)), 'assets/icons/hospital.png' );
 
     var icon;
@@ -244,19 +333,22 @@ class _MapsPlaceState extends State<MapsPlace> {
               children: [
                 Expanded(
                   child: Container(
-                    // width: 100,
-                    // height: 100,
+                    width: 250,
+                    height: 150,
                     padding: const EdgeInsets.all(8),
-                    decoration: !vc ? const BoxDecoration(
-                      image: DecorationImage(
-                        image: NetworkImage(
-                  'https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=t6449eiDJard-dsME9kw7g&cb_client=search.gws-prod.gps&w=408&h=240&yaw=340.2773&pitch=0&thumbfov=100'                      ),
-                        fit: BoxFit.cover,
-                        filterQuality: FilterQuality.high,
-                      ),
-                    ): const BoxDecoration(
-                      color: Colors.green,
-                    ),
+                    decoration: !vc
+                        ? BoxDecoration(
+                            image: DecorationImage(
+                              image: image != ''
+                                  ? NetworkImage(image)
+                                  : Image.asset(images[0]).image,
+                              fit: BoxFit.fitWidth,
+                              filterQuality: FilterQuality.high,
+                            ),
+                          )
+                        : const BoxDecoration(
+                            color: Colors.green,
+                          ),
                     child: Text(
                       mkID,
                       style: const TextStyle(
@@ -309,80 +401,27 @@ class _MapsPlaceState extends State<MapsPlace> {
     });
   }
 
-  void _changeMapType() {
-    setState(() {
-      _tipoMapa =
-          _tipoMapa == MapType.normal ? MapType.satellite : MapType.normal;
-    });
-  }
+  void getCurrentLocation() async {
+    Location location = Location();
+    
+    location.getLocation().then((location) {
+      posAtual = LatLng(location.latitude!, location.longitude!);
+    } );
+      
+    
 
-  void _addMarker() {
-    setState(() {
-      _markers.addAll({
-        'teste': Marker(
-          markerId: const MarkerId('add local'),
-          icon: BitmapDescriptor.defaultMarker,
-          position: posAtual!,
-          infoWindow: const InfoWindow(
-              title: 'adicionei', snippet: 'teste de adicionar local '),
-        ),
+    location.onLocationChanged.listen((newLoc) {
+      posAtual = LatLng(newLoc.latitude!, newLoc.longitude!);
+      setState(() {
+        
       });
     });
   }
 
-  Future<void> _novaPos() async {
-    const LatLng novaPos = LatLng(-20.014442652072827, -45.976337386374325);
-    _mapController.animateCamera(
-      CameraUpdate.newCameraPosition(
-        const CameraPosition(
-          target: novaPos,
-          zoom: 16,
-        ),
-      ),
-    );
-
+  void _changeMapType() {
     setState(() {
-      const marker = Marker(
-        markerId: MarkerId('novaPos'),
-        icon: BitmapDescriptor.defaultMarker,
-        position: novaPos,
-        infoWindow: InfoWindow(
-          title: 'nova posicao',
-          snippet: 'teste de nova posicao',
-        ),
-      );
-
-      _markers
-        ..clear()
-        ..addAll({'novaPos': marker});
-    });
-  }
-
-  Future<void> _goPosDefault() async {
-    const posDefault = pos_default;
-    _mapController.animateCamera(
-      CameraUpdate.newCameraPosition(
-        const CameraPosition(
-          target: pos_default,
-          zoom: 16,
-        ),
-      ),
-    );
-
-    setState(() {
-      const marker = Marker(
-        markerId: MarkerId('pos padrao'),
-        icon: BitmapDescriptor.defaultMarker,
-        position: posDefault,
-        infoWindow: InfoWindow(
-          title: 'posicao padrao',
-          snippet: 'teste de posicao padrao',
-        ),
-      );
-
-      _markers
-        ..clear()
-        ..addAll({'pos padrao': marker});
+      _tipoMapa =
+          _tipoMapa == MapType.normal ? MapType.satellite : MapType.normal;
     });
   }
 
@@ -391,7 +430,7 @@ class _MapsPlaceState extends State<MapsPlace> {
     if (!_serviceEnabled) {
       _serviceEnabled = await location.requestService();
       if (!_serviceEnabled) {
-        // Serviço de localização desabilitado pelo usuário
+        _checkLocationPermission();
         return;
       }
     }
@@ -406,35 +445,235 @@ class _MapsPlaceState extends State<MapsPlace> {
         _checkLocationPermission();
       }
     }
-
     fetchLocationUpdate();
   }
 
-  Future<void> _goPlace(Map<String, dynamic> place) async {
-    final lat = place['geometry']['location']['lat'];
-    final lng = place['geometry']['location']['lng'];
+  Future<Uint8List> getBytesFromAsset(String path, int width) async {
+    ByteData data = await rootBundle.load(path);
+    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
+        targetWidth: width);
+    ui.FrameInfo fi = await codec.getNextFrame();
+    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!
+        .buffer
+        .asUint8List();
+  }
 
-    final placeLatLng = LatLng(lat, lng);
+  Future<BitmapDescriptor> getBitmapDescriptorFromAssetBytes(
+      String path, int width) async {
+    final Uint8List imageData = await getBytesFromAsset(path, width);
+    return BitmapDescriptor.fromBytes(imageData);
+  }
 
-    _mapController.animateCamera(
-      CameraUpdate.newCameraPosition(
-        CameraPosition(
-          target: placeLatLng,
-          zoom: 16,
+  Future<void> createMarkersEscorpioes(List<LatLng> locations) async {
+    final Uint8List markerIcon = await getBytesFromAsset(images[1], 150);
+
+    for (var location in locations) {
+      escorpiaoMarker.add(
+        Marker(
+          markerId: MarkerId('escorpiao ${location.latitude}'),
+          position: LatLng(location.latitude, location.longitude),
+          icon: BitmapDescriptor.fromBytes(markerIcon),
+          onTap: () {
+            _customInfoWindowController.addInfoWindow!(
+              Container(
+                width: 300,
+                height: 200,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(color: Colors.white, width: 1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Container(
+                        width: 250,
+                        height: 150,
+                        padding: const EdgeInsets.all(8),
+                        decoration: const BoxDecoration(
+                          image: DecorationImage(
+                            image: NetworkImage(
+                                'https://gurupi.to.gov.br/wp-content/uploads/2022/08/image-1-1-1.png'),
+                            fit: BoxFit.fitWidth,
+                            filterQuality: FilterQuality.high,
+                          ),
+                        ),
+                        child: const Text(
+                          'Escorpiao avistado! Cuidado!',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              LatLng(location.latitude, location.longitude),
+            );
+          },
         ),
-      ),
-    );
+      );
+    }
 
-    setState(() {
-      _markers.clear();
-      addMarkers(place['name'], placeLatLng, false);
+    setState(() {});
+  }
+
+  // void _loadData() {
+  //   // ignore: avoid_single_cascade_in_expression_statements
+  //   MarkerDataSet()
+  //     ..markers.forEach((element) {
+  //       addMarkers(element.mkID, element.position, element.vc, element.image);
+  //     });
+  // }
+
+  Future<void> createMarkersUbs(MarkerDataSet ubs) async {
+    final Uint8List markerIcon = await getBytesFromAsset(images[0], 90);
+    print('------------${ubs.markers.length}------------');
+    for (var ubs in ubs.markers) {
+      ubsMarker.add(
+        Marker(
+          markerId: MarkerId(ubs.mkID),
+          position: LatLng(ubs.position.latitude, ubs.position.longitude),
+          icon: BitmapDescriptor.fromBytes(markerIcon),
+          onTap: () {
+            _customInfoWindowController.addInfoWindow!(
+              Container(
+                width: 300,
+                height: 200,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(color: Colors.white, width: 1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Container(
+                        width: 250,
+                        height: 150,
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: NetworkImage(ubs.image),
+                            fit: BoxFit.fitWidth,
+                            filterQuality: FilterQuality.high,
+                          ),
+                        ),
+                        child: Text(
+                          ubs.mkID,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              LatLng(ubs.position.latitude, ubs.position.longitude),
+            );
+          },
+        ),
+      );
+    }
+    setState(() {});
+  }
+
+  void addCustomMarkerYou() async{
+    BitmapDescriptor.fromAssetImage(
+             ImageConfiguration(), 'assets/icons/homem1.png'  ) 
+        .then((icon) {
+      setState(() {
+        customIcon = icon;
+      });
     });
   }
-  
-  void _loadData() {
-    MarkerDataSet() 
-      ..markers.forEach((element) {
-        addMarkers(element.mkID, element.position, element.vc);
-      });
-  }
+ 
+  //   final Uint8List markerIcon = await getBytesFromAsset(images[3], 150);
+
+  //   setState(() {
+  //     customIcon = BitmapDescriptor.fromBytes(markerIcon);
+  //   });
+  // }
 }
+
+
+
+
+//metodos nao usados mais que pode ser util
+  // void _addMarker() {
+  //   setState(() {
+  //     _markers.addAll({
+  //       'teste': Marker(
+  //         markerId: const MarkerId('add local'),
+  //         icon: BitmapDescriptor.defaultMarker,
+  //         position: posAtual!,
+  //         infoWindow: const InfoWindow(
+  //             title: 'adicionei', snippet: 'teste de adicionar local '),
+  //       ),
+  //     });
+  //   });
+  // }
+
+  // Future<void> _novaPos() async {
+  //   const LatLng novaPos = LatLng(-20.014442652072827, -45.976337386374325);
+  //   _mapController.animateCamera(
+  //     CameraUpdate.newCameraPosition(
+  //       const CameraPosition(
+  //         target: novaPos,
+  //         zoom: 16,
+  //       ),
+  //     ),
+  //   );
+
+  //   setState(() {
+  //     const marker = Marker(
+  //       markerId: MarkerId('novaPos'),
+  //       icon: BitmapDescriptor.defaultMarker,
+  //       position: novaPos,
+  //       infoWindow: InfoWindow(
+  //         title: 'nova posicao',
+  //         snippet: 'teste de nova posicao',
+  //       ),
+  //     );
+
+  //     _markers
+  //       ..clear()
+  //       ..addAll({'novaPos': marker});
+  //   });
+  // }
+
+  // Future<void> _goPosDefault() async {
+  //   const posDefault = pos_default;
+  //   _mapController.animateCamera(
+  //     CameraUpdate.newCameraPosition(
+  //       const CameraPosition(
+  //         target: pos_default,
+  //         zoom: 16,
+  //       ),
+  //     ),
+  //   );
+
+  //   setState(() {
+  //     const marker = Marker(
+  //       markerId: MarkerId('pos padrao'),
+  //       icon: BitmapDescriptor.defaultMarker,
+  //       position: posDefault,
+  //       infoWindow: InfoWindow(
+  //         title: 'posicao padrao',
+  //         snippet: 'teste de posicao padrao',
+  //       ),
+  //     );
+
+  //     _markers
+  //       ..clear()
+  //       ..addAll({'pos padrao': marker});
+  //   });
+  // }

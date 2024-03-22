@@ -1,3 +1,4 @@
+import 'package:escorpionico_proj/src/pages/maps_place/maps_place.dart';
 import 'package:flutter/material.dart';
 
 import '../home_page.dart';
@@ -53,10 +54,14 @@ class LoginStore extends ChangeNotifier {
     if(isFormValid ) {
       try {
         await Future.delayed(const Duration(seconds: 2));
-        if (email == 'opa@gmail.com' && senha == '123') {
+        if (email == 'higor@gmail.com' && senha == '123') {
           print('Login efetuado com sucesso');
+          Navigator.pushReplacementNamed(
+            _formKey.currentContext!,
+            '/maps_place',
+        );
           isLoading.value = false;
-          _onSuccess();
+          // _onSuccess();
         } else {
           isLoading.value = false;
           _onError();
@@ -117,9 +122,12 @@ class LoginStore extends ChangeNotifier {
               ),
               SizedBox(width: 20),
               Text('Login efetuado com sucesso'),
+
             ],
           ),
         );
+        //fazer o push para outra tela
+        
       },
     );
 

@@ -16,6 +16,11 @@ class AppPage extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'App',
       theme: AppTheme.lightTheme, 
-      home: const MapsPlace());
+      initialRoute: '/login',
+      routes: {
+        '/login': (context) => const LoginPage(),
+        
+        '/maps_place': (context) => const MapsPlace(),
+      },);
   }
 }
