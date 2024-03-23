@@ -92,42 +92,7 @@ class _MapsPlaceState extends State<MapsPlace> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: Drawer(
-        child: ListView(
-          children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-              ),
-              child: Text(
-                'Menu',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
-              ),
-            ),
-            ListTile(
-              title: const Text('Inicio'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              title: const Text('Sobre'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              title: const Text('Sair'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        ),
-      ),
+      
       appBar: AppBar(
         title: const Text('Mapa de Bambuí'),
         centerTitle: true,
@@ -207,7 +172,7 @@ class _MapsPlaceState extends State<MapsPlace> {
                         CameraUpdate.newCameraPosition(
                           CameraPosition(
                             target: posAtual!,
-                            zoom: 16,
+                            zoom: 17,
                           ),
                         ),
                       );
@@ -465,7 +430,7 @@ class _MapsPlaceState extends State<MapsPlace> {
   }
 
   Future<void> createMarkersEscorpioes(List<LatLng> locations) async {
-    final Uint8List markerIcon = await getBytesFromAsset(images[1], 150);
+    final Uint8List markerIcon = await getBytesFromAsset(images[1], 100);
 
     for (var location in locations) {
       escorpiaoMarker.add(
@@ -553,7 +518,9 @@ class _MapsPlaceState extends State<MapsPlace> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    
                     Expanded(
+                      flex: 4,
                       child: Container(
                         width: 250,
                         height: 150,
@@ -564,16 +531,21 @@ class _MapsPlaceState extends State<MapsPlace> {
                             fit: BoxFit.fitWidth,
                             filterQuality: FilterQuality.high,
                           ),
+                          borderRadius: BorderRadius.circular(20),
                         ),
-                        child: Text(
-                          ubs.mkID,
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                        
                       ),
-                    )
+                    ),
+                    const SizedBox(height: 12,),
+                    Expanded(
+                      child: Text(
+                            ubs.mkID,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                    ),
                   ],
                 ),
               ),
@@ -588,7 +560,7 @@ class _MapsPlaceState extends State<MapsPlace> {
 
   void addCustomMarkerYou() async{
     BitmapDescriptor.fromAssetImage(
-             ImageConfiguration(), 'assets/icons/homem1.png'  ) 
+             ImageConfiguration(), 'assets/icons/tia.png'  ) 
         .then((icon) {
       setState(() {
         customIcon = icon;

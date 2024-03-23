@@ -1,9 +1,7 @@
-
-import 'package:escorpionico_proj/src/pages/maps_place/maps_place.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../home_page.dart';
+import '../esqueceu_senha/esqueceu_senha.dart';
 
 class LoginStore extends ChangeNotifier {
   LoginStore() : super();
@@ -56,17 +54,28 @@ class LoginStore extends ChangeNotifier {
         email: email,
         password: senha,
       );
-      
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        erroLogin(e.code);
+        showSnackbarMessage(_formKey.currentContext!, 'Usuário não encontrado');
       } else if (e.code == 'wrong-password') {
-        erroLogin(e.code);
-      } else if (e.code == 'email-already-in-use') {
-        erroLogin(e.code);
+        showSnackbarMessage(_formKey.currentContext!, 'Senha incorreta');
+      } else {
+        erroLogin('Erro ao realizar login');
       }
     }
     isLoading.value = false;
+  }
+
+  void showSnackbarMessage(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+        duration: const Duration(seconds: 3),
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.only(bottom: 180, right: 20, left: 20),
+      ),
+    );
   }
 
   void erroLogin(String msg) {
@@ -75,17 +84,28 @@ class LoginStore extends ChangeNotifier {
       builder: (context) {
         return AlertDialog(
           title: const Text('Erro'),
-          content: Column(
-            children: [
-              const Text('Erro ao realizar login'),
-              SizedBox(
-                height: 10,
-              ),
-              if (msg == 'user-not-found') const Text('Usuário não encontrado'),
-              if (msg == 'wrong-password') const Text('Senha incorreta'),
-              if (msg == 'email-already-in-use')
-                const Text('Email já cadastrado'),
-            ],
+          content: Container(
+            constraints: BoxConstraints(maxHeight: 200),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Erro ao realizar login',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                if (msg == 'user-not-found')
+                  const Text('Usuário não encontrado'),
+                if (msg == 'wrong-password') const Text('Senha incorreta'),
+                if (msg == 'email-already-in-use')
+                  const Text('Email já cadastrado'),
+                if (msg == 'Erro ao realizar login')
+                  const Text(
+                      'Por favor, tente novamente! \nVerifique se o email e senha estão corretos.'),
+              ],
+            ),
           ),
           actions: [
             TextButton(
@@ -129,11 +149,16 @@ class LoginStore extends ChangeNotifier {
   // }
 
   void register() {
-    print('Register');
+    Navigator.pushNamed(_formKey.currentContext!, '/register');
   }
 
   void forgotPassword() {
-    print('Forgot password');
+    Navigator.push(
+      _formKey.currentContext!,
+      MaterialPageRoute(builder: (context) {
+        return const EsqueceuSenhaPage();
+      }),
+    );
   }
 
   void togglePasswordVisibility() {
@@ -157,38 +182,5 @@ class LoginStore extends ChangeNotifier {
         ],
       ),
     );
-  }
-
-  void _onSuccess() async {
-    showDialog(
-      context: _formKey.currentContext!,
-      barrierDismissible:
-          false, // Evita que o usuário feche o diálogo ao clicar fora
-      builder: (context) {
-        // Utiliza AlertDialog personalizado para adicionar o ícone animado
-        return AlertDialog(
-          title: const Text('Sucesso'),
-          content: Row(
-            children: [
-              CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
-              ),
-              SizedBox(width: 20),
-              Text('Login efetuado com sucesso'),
-            ],
-          ),
-        );
-        //fazer o push para outra tela
-      },
-    );
-
-    // Espera 1 segundo antes de fazer o push para outra tela
-    Future.delayed(Duration(seconds: 1), () {
-      Navigator.of(_formKey.currentContext!).pop(); // Fecha o diálogo
-      Navigator.push(
-        _formKey.currentContext!,
-        MaterialPageRoute(builder: (context) => const HomePage()),
-      );
-    });
   }
 }

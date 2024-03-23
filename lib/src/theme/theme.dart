@@ -17,7 +17,7 @@ final class AppTheme {
     scaffoldBackgroundColor: lightOrange,
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: lightOrange,
+      fillColor: Colors.white.withOpacity(0.85),
       labelStyle: const TextStyle(
         color: orangeColor,
         fontSize: 15,

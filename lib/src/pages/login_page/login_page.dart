@@ -1,5 +1,6 @@
 import 'package:escorpionico_proj/src/pages/login_page/login_controller.dart';
 import 'package:escorpionico_proj/src/pages/login_page/login_store.dart';
+import 'package:escorpionico_proj/src/services/auth_service_google.dart';
 import 'package:escorpionico_proj/src/theme/theme.dart';
 
 import 'package:flutter/material.dart';
@@ -13,15 +14,11 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage>{
- 
-
+class _LoginPageState extends State<LoginPage> {
   final LoginController controller = LoginController(LoginStore());
-  
 
   @override
   void initState() {
-    
     super.initState();
   }
 
@@ -45,7 +42,7 @@ class _LoginPageState extends State<LoginPage>{
           // image: DecorationImage(
           //   image: ('assets/images/background_login.png'),
           //   fit: BoxFit.cover,
-            
+
           // ),
           color: Color(0xFF01bdd6),
         ),
@@ -83,12 +80,12 @@ class _LoginPageState extends State<LoginPage>{
                   ),
                   ValueListenableBuilder(
                     valueListenable: controller.obscurePassword,
-
                     builder:
-                    //pra ficar observando a mudança de estado do signal
-                    (context, _, __) {
+                        //pra ficar observando a mudança de estado do signal
+                        (context, _, __) {
                       return TextFormField(
-                        obscureText: controller.obscurePassword.value ? true : false,
+                        obscureText:
+                            controller.obscurePassword.value ? true : false,
                         decoration: InputDecoration(
                           labelText: 'Senha',
                           border: const OutlineInputBorder(),
@@ -110,27 +107,20 @@ class _LoginPageState extends State<LoginPage>{
                     },
                   ),
                   const SizedBox(
-                    height: 10,
+                    height: 5,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: TextButton(
-                          onPressed: () {
-                            controller.forgotPassword();
-                          },
-                          child:  Expanded(
-                            child: RichText(
-                              text: const TextSpan(
-                                text: 'Esqueceu a senha?',
-                                style: TextStyle(color: Colors.black, fontSize: 15),
-                                children: <TextSpan>[
-                                  TextSpan(text: ' Clique aqui', style: TextStyle(color: AppTheme.blueColor, fontSize: 15 , fontWeight: FontWeight.bold)),
-                                ],
-                                                    ),
-                            ),
-                          ),),
+                      TextButton(
+                        onPressed: () {
+                          controller.forgotPassword();
+                        },
+                        child: const Text('Esqueceu a senha?',
+                            style: TextStyle(
+                                color: Colors.black54,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold)),
                       ),
                     ],
                   ),
@@ -138,35 +128,44 @@ class _LoginPageState extends State<LoginPage>{
                     height: 10,
                   ),
                   SizedBox(
-                      width: size.width * 0.8,
-                      height: 48,
-                      child: Builder(
-                        builder: (context) {
-                          return ElevatedButton(
-                              onPressed: () async {
-                                await controller.validateForm();
-                                final valido = controller.isFormValid;
-                                    
-                          
-                                if (valido) {
-                                  await
-                                  controller.login(
-                                      controller.emailController.text,
-                                      controller.passwordController.text);
-                                  
-                                }
-                              },
-                              child:  ValueListenableBuilder(
-                                valueListenable: controller.isLoading,
-                                builder: (context, _, __) {
-                                  return controller.isLoading.value
-                                      ? const CircularProgressIndicator()
-                                      : const Text('ENTRAR');
-                                },
-                              ),);
-                        }
-                      ),),
-                  const Text('OU', style: TextStyle(color: AppTheme.blueColor, fontSize: 18, fontWeight: FontWeight.bold),),
+                    width: size.width * 0.8,
+                    height: 48,
+                    child: Builder(builder: (context) {
+                      return ElevatedButton(
+                        onPressed: () async {
+                          await controller.validateForm();
+                          final valido = controller.isFormValid;
+
+                          if (valido) {
+                            await controller.login(
+                                controller.emailController.text,
+                                controller.passwordController.text);
+                          }
+                        },
+                        child: ValueListenableBuilder(
+                          valueListenable: controller.isLoading,
+                          builder: (context, _, __) {
+                            return controller.isLoading.value
+                                ? const CircularProgressIndicator()
+                                : const Text('ENTRAR');
+                          },
+                        ),
+                      );
+                    }),
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  const Text(
+                    'OU',
+                    style: TextStyle(
+                        color: AppTheme.blueColor,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
                   SizedBox(
                     width: size.width * 0.8,
                     height: 48,
@@ -175,6 +174,64 @@ class _LoginPageState extends State<LoginPage>{
                         controller.register();
                       },
                       child: const Text('CADASTRAR'),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 48,
+                  ),
+                  const Row(
+                    children: [
+                      Expanded(
+                        child: Divider(
+                          color: Colors.black54,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 10,),
+                       Text(
+                        'Continuar com',
+                        style: TextStyle(
+                            color: AppTheme.blueColor,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Expanded(
+                        child: Divider(
+                          color: Colors.black54,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  InkWell(
+                    onTap: () async {
+                      showDialog(context: context, builder: (context) {
+                        return const Center(child: CircularProgressIndicator());
+                      });
+                      await AuthServiceGoogle().signGoogle();
+                      Navigator.of(context).pop();
+                      
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Container(
+                        margin: const EdgeInsets.all(10),
+                        width: 50,
+                        height: 50,
+                        decoration: BoxDecoration(
+                          image: const DecorationImage(
+                            image: AssetImage('assets/icons/google.png'),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ],
