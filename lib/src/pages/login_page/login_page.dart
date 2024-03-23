@@ -102,7 +102,10 @@ class _LoginPageState extends State<LoginPage>{
                           ),
                         ),
                         controller: controller.passwordController,
-                        validator: Validatorless.required('Campo obrigatório'),
+                        validator: Validatorless.multiple([
+                          Validatorless.required('Campo obrigatório'),
+                          Validatorless.min(6, 'Senha muito curta'),
+                        ]),
                       );
                     },
                   ),
@@ -112,19 +115,23 @@ class _LoginPageState extends State<LoginPage>{
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      TextButton(
-                        onPressed: () {
-                          controller.forgotPassword();
-                        },
-                        child:  RichText(
-                          text: const TextSpan(
-                            text: 'Esqueceu a senha?',
-                            style: TextStyle(color: Colors.black, fontSize: 15),
-                            children: <TextSpan>[
-                              TextSpan(text: ' Clique aqui', style: TextStyle(color: AppTheme.blueColor, fontSize: 15 , fontWeight: FontWeight.bold)),
-                            ],
+                      Expanded(
+                        child: TextButton(
+                          onPressed: () {
+                            controller.forgotPassword();
+                          },
+                          child:  Expanded(
+                            child: RichText(
+                              text: const TextSpan(
+                                text: 'Esqueceu a senha?',
+                                style: TextStyle(color: Colors.black, fontSize: 15),
+                                children: <TextSpan>[
+                                  TextSpan(text: ' Clique aqui', style: TextStyle(color: AppTheme.blueColor, fontSize: 15 , fontWeight: FontWeight.bold)),
+                                ],
+                                                    ),
+                            ),
+                          ),),
                       ),
-                        ),),
                     ],
                   ),
                   const SizedBox(
@@ -146,6 +153,7 @@ class _LoginPageState extends State<LoginPage>{
                                   controller.login(
                                       controller.emailController.text,
                                       controller.passwordController.text);
+                                  
                                 }
                               },
                               child:  ValueListenableBuilder(
