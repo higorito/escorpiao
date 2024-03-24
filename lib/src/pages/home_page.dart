@@ -149,6 +149,7 @@ class HomePage extends StatelessWidget {
                       // _showDialog(context);
                     },
                   ),
+
                 ],
               ),
             ),
@@ -186,7 +187,7 @@ class HomePage extends StatelessWidget {
                           margin: const EdgeInsets.all(10),
                           height: 100,
                           width: 100,
-                          color: Colors.blue,
+                          color: Colors.grey[300],
                           child: Text('Item $index'),
                         );
                       },
@@ -195,9 +196,13 @@ class HomePage extends StatelessWidget {
                   const SizedBox(
                     height: 20,
                   ),
-                  ElevatedButton(onPressed: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => MapsPlace()));
-                  }, child: const Text('Clique aqui maps')),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.6,
+                    height: 58,
+                    child: ElevatedButton(onPressed: (){
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const MapsPlace()));
+                    }, child: const Text('Acessar o Maps')),
+                  ),
                 ],
               ),
             ),

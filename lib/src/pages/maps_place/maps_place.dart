@@ -53,7 +53,7 @@ class _MapsPlaceState extends State<MapsPlace> {
     'assets/icons/ubs.png',
     'assets/icons/scorpion.png',
     'assets/icons/sinal-de-alerta.png'
-    'assets/icons/homem.png'
+        'assets/icons/homem.png'
   ];
 
   final List<LatLng> localAvistado = [
@@ -76,7 +76,6 @@ class _MapsPlaceState extends State<MapsPlace> {
   final MarkerDataSet ubsData = MarkerDataSet();
 
   BitmapDescriptor customIcon = BitmapDescriptor.defaultMarker;
-  
 
   @override
   void initState() {
@@ -91,8 +90,8 @@ class _MapsPlaceState extends State<MapsPlace> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Scaffold(
-      
       appBar: AppBar(
         title: const Text('Mapa de Bambuí'),
         centerTitle: true,
@@ -106,6 +105,7 @@ class _MapsPlaceState extends State<MapsPlace> {
                 Column(
                   children: [
                     Expanded(
+                      flex: 9,
                       child: Stack(
                         children: [
                           GoogleMap(
@@ -127,26 +127,24 @@ class _MapsPlaceState extends State<MapsPlace> {
                               // addMarkers('bambui cidade boa', bambui, false);
                               // addMarkers('VOCE', posAtual!, true, '');
                             },
-                            
-                            markers:
-                            isEscorpiao?
-                             {
-                              Marker(
-                                markerId: const MarkerId('voce'),
-                                position: posAtual!,
-                                icon: customIcon,
-                                
-                              ),
-                              ...ubsMarker,
-                              ...escorpiaoMarker,
-                            }: {
-                              Marker(
-                                markerId: const MarkerId('voce'),
-                                position: posAtual!,
-                                icon: customIcon,
-                              ),
-                              ...ubsMarker,
-                            },
+                            markers: isEscorpiao
+                                ? {
+                                    Marker(
+                                      markerId: const MarkerId('voce'),
+                                      position: posAtual!,
+                                      icon: customIcon,
+                                    ),
+                                    ...ubsMarker,
+                                    ...escorpiaoMarker,
+                                  }
+                                : {
+                                    Marker(
+                                      markerId: const MarkerId('voce'),
+                                      position: posAtual!,
+                                      icon: customIcon,
+                                    ),
+                                    ...ubsMarker,
+                                  },
                             mapType: _tipoMapa,
                             onTap: (position) {
                               _customInfoWindowController.hideInfoWindow!();
@@ -160,11 +158,66 @@ class _MapsPlaceState extends State<MapsPlace> {
                         ],
                       ),
                     ),
+                    Expanded(
+                        child: Container(
+                      
+                      decoration:  BoxDecoration(
+                        color: Colors.white,
+                        border:  Border(
+                          top: BorderSide(color: Colors.grey[200]!),
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          const Text(
+                            'Legenda',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 30,
+                                height: 30,
+                                decoration: BoxDecoration(
+                                  image:  DecorationImage(
+                                    image: AssetImage(images[0]),
+                                    fit: BoxFit.cover,
+                                  ),
+                                  
+                                ),
+                              ),
+                              const Text(' - Unidade de Saúde'),
+                              const SizedBox(
+                                width: 20,
+                              ),
+                              Container(
+                                width: 30,
+                                height: 30,
+                                decoration: BoxDecoration(
+                                  image:  DecorationImage(
+                                    image: AssetImage(images[1]),
+                                    fit: BoxFit.cover,
+                                  ),
+                                  
+                                ),
+                              ),
+                              const Text(' - Escorpião avistado'),
+                              
+
+                            ],
+                          ),
+                        ],
+                      ),
+                    )),
                   ],
                 ),
                 Positioned(
-                  bottom: 10,
-                  left: 10,
+                  bottom: size.height * 0.095,
+                  left: size.width * 0.018,
                   child: FloatingActionButton(
                     onPressed: () {
                       _customInfoWindowController.googleMapController!
@@ -247,7 +300,7 @@ class _MapsPlaceState extends State<MapsPlace> {
                           );
                         },
                         child: const Icon(
-                          Icons.add_location_alt_rounded,
+                          Icons.edit_location_alt_sharp,
                           color: Colors.red,
                         ),
                       ),
@@ -368,18 +421,14 @@ class _MapsPlaceState extends State<MapsPlace> {
 
   void getCurrentLocation() async {
     Location location = Location();
-    
+
     location.getLocation().then((location) {
       posAtual = LatLng(location.latitude!, location.longitude!);
-    } );
-      
-    
+    });
 
     location.onLocationChanged.listen((newLoc) {
       posAtual = LatLng(newLoc.latitude!, newLoc.longitude!);
-      setState(() {
-        
-      });
+      setState(() {});
     });
   }
 
@@ -457,20 +506,23 @@ class _MapsPlaceState extends State<MapsPlace> {
                         width: 250,
                         height: 150,
                         padding: const EdgeInsets.all(8),
-                        decoration: const BoxDecoration(
-                          image: DecorationImage(
+                        decoration: BoxDecoration(
+                          image: const DecorationImage(
                             image: NetworkImage(
                                 'https://gurupi.to.gov.br/wp-content/uploads/2022/08/image-1-1-1.png'),
                             fit: BoxFit.fitWidth,
                             filterQuality: FilterQuality.high,
                           ),
+                          borderRadius: BorderRadius.circular(24),
                         ),
-                        child: const Text(
-                          'Escorpiao avistado! Cuidado!',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                          ),
+                      ),
+                    ),
+                    const Expanded(
+                      child: Text(
+                        'Escorpiao avistado! Cuidado!',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     )
@@ -518,7 +570,6 @@ class _MapsPlaceState extends State<MapsPlace> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    
                     Expanded(
                       flex: 4,
                       child: Container(
@@ -531,20 +582,21 @@ class _MapsPlaceState extends State<MapsPlace> {
                             fit: BoxFit.fitWidth,
                             filterQuality: FilterQuality.high,
                           ),
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(24),
                         ),
-                        
                       ),
                     ),
-                    const SizedBox(height: 12,),
+                    const SizedBox(
+                      height: 12,
+                    ),
                     Expanded(
                       child: Text(
-                            ubs.mkID,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
+                        ubs.mkID,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -558,16 +610,16 @@ class _MapsPlaceState extends State<MapsPlace> {
     setState(() {});
   }
 
-  void addCustomMarkerYou() async{
+  void addCustomMarkerYou() async {
     BitmapDescriptor.fromAssetImage(
-             ImageConfiguration(), 'assets/icons/tia.png'  ) 
+            const ImageConfiguration(), 'assets/icons/tia.png')
         .then((icon) {
       setState(() {
         customIcon = icon;
       });
     });
   }
- 
+
   //   final Uint8List markerIcon = await getBytesFromAsset(images[3], 150);
 
   //   setState(() {
