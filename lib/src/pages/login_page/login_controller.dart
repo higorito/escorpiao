@@ -24,7 +24,7 @@ class LoginController {
 
   Future<void> login(String email, String senha) => _store.login(email, senha);
 
-  void register() => _store.register();
+  void register(bool aSaude) => _store.register(aSaude);
 
   void forgotPassword() => _store.forgotPassword();
 

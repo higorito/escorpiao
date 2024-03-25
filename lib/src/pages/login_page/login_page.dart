@@ -154,10 +154,10 @@ class _LoginPageState extends State<LoginPage> {
                     }),
                   ),
                   const SizedBox(
-                    height: 8,
+                    height: 12,
                   ),
                   const Text(
-                    'OU',
+                    'OU REGISTRE-SE COM',
                     style: TextStyle(
                         color: AppTheme.blueColor,
                         fontSize: 16,
@@ -171,13 +171,31 @@ class _LoginPageState extends State<LoginPage> {
                     height: 48,
                     child: OutlinedButton(
                       onPressed: () {
-                        controller.register();
+                        controller.register(false);
                       },
-                      child: const Text('CADASTRAR'),
+                      child: const Text('USUÁRIO COMUM '),
                     ),
                   ),
                   const SizedBox(
+                    height: 8,
+                  ),
+                  SizedBox(
+                    width: size.width * 0.8,
                     height: 48,
+                    
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        primary: Colors.white,
+                        backgroundColor: AppTheme.blueColor,
+                      ),
+                      onPressed: () {
+                        controller.register(true);
+                      },
+                      child: const Text('AGENTE DE SAÚDE'),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 32,
                   ),
                   const Row(
                     children: [
@@ -187,8 +205,9 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                       SizedBox(
-                        width: 10,),
-                       Text(
+                        width: 10,
+                      ),
+                      Text(
                         'Continuar com',
                         style: TextStyle(
                             color: AppTheme.blueColor,
@@ -210,12 +229,14 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   InkWell(
                     onTap: () async {
-                      showDialog(context: context, builder: (context) {
-                        return const Center(child: CircularProgressIndicator());
-                      });
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          });
                       await AuthServiceGoogle().signGoogle();
                       Navigator.of(context).pop();
-                      
                     },
                     child: Container(
                       decoration: BoxDecoration(

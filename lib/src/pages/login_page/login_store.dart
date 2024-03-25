@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../esqueceu_senha/esqueceu_senha.dart';
+import '../register_page/register_switch.dart';
 
 class LoginStore extends ChangeNotifier {
   LoginStore() : super();
@@ -148,8 +149,11 @@ class LoginStore extends ChangeNotifier {
 
   // }
 
-  void register() {
-    Navigator.pushNamed(_formKey.currentContext!, '/register');
+  void register(bool aSaude) {
+    Navigator.push(_formKey.currentContext!,
+        MaterialPageRoute(builder: (context) {
+      return RegisterSwitch( agenteSaude: aSaude);
+    }));
   }
 
   void forgotPassword() {

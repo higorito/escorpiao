@@ -24,7 +24,7 @@ class AppPage extends StatelessWidget {
       routes: {
         '/auth': (context) => const AuthPage(),
         '/login': (context) => const LoginPage(),
-        '/home': (context) => const HomePage(),
+        '/home': (context) => HomePage(),
         '/register': (context) => const RegisterPage(),
         '/2-register': (context) => const ProxRegisterpage(),
         // '/esqueceu-senha': (context) => const EsqueceuSenhaPage(),

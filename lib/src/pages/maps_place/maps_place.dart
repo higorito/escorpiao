@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -69,6 +70,35 @@ class _MapsPlaceState extends State<MapsPlace> {
     const LatLng(-20.012303737314173, -45.970747217929684),
   ];
 
+  List<String> docsID = [];
+
+  Future getDocsID() async {
+    await FirebaseFirestore.instance.collection('casos').get().then(
+          (snapshot) => snapshot.docs.forEach(
+            (doc) {
+              docsID.add(doc.reference.id);
+            },
+          ),
+        );
+  }
+
+  final List<LatLng> localEscorpiao = [];
+
+  Future getLocalEscorpiao() async {
+    await FirebaseFirestore.instance.collection('casos').get().then(
+          (snapshot) => snapshot.docs.forEach(
+            (doc) {
+              localEscorpiao.add(
+                LatLng(
+                  doc['latLong[Latitude]'] as double,
+                  doc['latLong[Longiture]'] as double,
+                ),
+              );
+            },
+          ),
+        );
+  }
+
   var isEscorpiao = false;
 
   GlobalKey<FormState> dialogFormKey = GlobalKey<FormState>();
@@ -80,10 +110,12 @@ class _MapsPlaceState extends State<MapsPlace> {
   @override
   void initState() {
     super.initState();
+    getDocsID();
+    getLocalEscorpiao();
     _checkLocationPermission();
     addCustomMarkerYou();
     createMarkersUbs(ubsData);
-    createMarkersEscorpioes(localAvistado);
+    createMarkersEscorpioes(localEscorpiao);
     WidgetsBinding.instance
         .addPostFrameCallback((_) async => await fetchLocationUpdate());
   }
@@ -160,10 +192,9 @@ class _MapsPlaceState extends State<MapsPlace> {
                     ),
                     Expanded(
                         child: Container(
-                      
-                      decoration:  BoxDecoration(
+                      decoration: BoxDecoration(
                         color: Colors.white,
-                        border:  Border(
+                        border: Border(
                           top: BorderSide(color: Colors.grey[200]!),
                         ),
                       ),
@@ -183,11 +214,10 @@ class _MapsPlaceState extends State<MapsPlace> {
                                 width: 30,
                                 height: 30,
                                 decoration: BoxDecoration(
-                                  image:  DecorationImage(
+                                  image: DecorationImage(
                                     image: AssetImage(images[0]),
                                     fit: BoxFit.cover,
                                   ),
-                                  
                                 ),
                               ),
                               const Text(' - Unidade de Saúde'),
@@ -198,16 +228,13 @@ class _MapsPlaceState extends State<MapsPlace> {
                                 width: 30,
                                 height: 30,
                                 decoration: BoxDecoration(
-                                  image:  DecorationImage(
+                                  image: DecorationImage(
                                     image: AssetImage(images[1]),
                                     fit: BoxFit.cover,
                                   ),
-                                  
                                 ),
                               ),
                               const Text(' - Escorpião avistado'),
-                              
-
                             ],
                           ),
                         ],
