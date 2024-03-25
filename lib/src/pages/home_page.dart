@@ -66,9 +66,8 @@ class _HomePageState extends State<HomePage> {
                   child: CircleAvatar(
                     radius: 50,
                     //imagem do usuario vindo do firebase auth
-                    backgroundImage: Image.network(
-                            FirebaseAuth.instance.currentUser!.photoURL!)
-                        .image,
+                    backgroundImage: Image(image: (FirebaseAuth.instance.currentUser!.photoURL != null)?foto.image: AssetImage('assets/icons/avatar.png') ).image,
+                        
                   ),
                 ),
                 Expanded(
@@ -163,9 +162,9 @@ class _HomePageState extends State<HomePage> {
         );
   }
 
-  final usuario = FirebaseAuth.instance.currentUser!.displayName;
+  final usuario = (FirebaseAuth.instance.currentUser!.email != null) ? FirebaseAuth.instance.currentUser!.displayName: Text(FirebaseAuth.instance.currentUser!.email!.substring(0, FirebaseAuth.instance.currentUser!.email!.indexOf('@')));
 
-  final foto = Image.network(FirebaseAuth.instance.currentUser!.photoURL!);
+  final foto = (FirebaseAuth.instance.currentUser!.photoURL != null)  ? Image.network(FirebaseAuth.instance.currentUser!.photoURL!): Image.asset('assets/icons/avatar.png');
 
   // final usuario =  'Higor';
   @override
@@ -194,7 +193,8 @@ class _HomePageState extends State<HomePage> {
                     letterSpacing: 1.5),
               ),
               Text(
-                'Seja bem vindo, $usuario ! ',
+                (usuario != null) ? 'Seja bem vindo, $usuario!': 'Seja bem vindo, ${FirebaseAuth.instance.currentUser!.email!.substring(0, FirebaseAuth.instance.currentUser!.email!.indexOf('@'))}! ',
+                
                 style:
                     const TextStyle(fontWeight: FontWeight.w400, fontSize: 20),
               ),
