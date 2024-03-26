@@ -54,6 +54,7 @@ class _HomePageState extends State<HomePage> {
   Drawer drawer(BuildContext context) {
     return Drawer(
       child: ListView(
+          
         padding: EdgeInsets.zero,
         children: <Widget>[
           DrawerHeader(
@@ -137,9 +138,7 @@ class _HomePageState extends State<HomePage> {
                   });
             },
           ),
-          const SizedBox(
-            height: 100,
-          ),
+          
           ListTile(
             title: const Text('Sair'),
             onTap: () {
