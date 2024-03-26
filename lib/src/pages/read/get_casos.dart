@@ -20,8 +20,8 @@ class GetCasos extends StatelessWidget {
 
             var latitude = data['latLong'].latitude;
             var longitude = data['latLong'].longitude;
-
-            // final List<LatLng> latLong = List<LatLng>.from(data['latLong'].map((e) => (e.latitude, e.longitude))).toList();
+            List<LatLng> latLngList = [LatLng(latitude, longitude)];
+            print('latLngList: $latLngList');
           return Text('Latitude: $latitude, Longitude: $longitude');
         }
 

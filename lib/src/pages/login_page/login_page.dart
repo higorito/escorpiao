@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 
 import 'package:validatorless/validatorless.dart';
 
+import '../home_page.dart';
+
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -236,7 +238,8 @@ class _LoginPageState extends State<LoginPage> {
                                 child: CircularProgressIndicator());
                           });
                       await AuthServiceGoogle().signGoogle();
-                      Navigator.of(context).pop();
+                      Navigator.pop(context);
+                      Navigator.pushReplacement(context,  MaterialPageRoute(builder: (context) =>  HomePage()));
                     },
                     child: Container(
                       decoration: BoxDecoration(
@@ -247,8 +250,8 @@ class _LoginPageState extends State<LoginPage> {
                         margin: const EdgeInsets.all(10),
                         width: 50,
                         height: 50,
-                        decoration: BoxDecoration(
-                          image: const DecorationImage(
+                        decoration: const BoxDecoration(
+                          image: DecorationImage(
                             image: AssetImage('assets/icons/google.png'),
                           ),
                         ),

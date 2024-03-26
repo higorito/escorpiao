@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:validatorless/validatorless.dart';
 
+import '../home_page.dart';
+
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
 
@@ -33,7 +35,7 @@ class _RegisterPageState extends State<RegisterPage> {
           );
           showSnackbarMessage(context, 'Usuário criado com sucesso');
           Navigator.of(context).pop();
-          await Navigator.of(context).pushReplacementNamed('/2-register');
+          await Navigator.push(context,  MaterialPageRoute(builder: (context) => HomePage()));
         } else {
           showSnackbarMessage(context, 'As senhas não coincidem');
         }
@@ -64,9 +66,10 @@ class _RegisterPageState extends State<RegisterPage> {
         child: Column(
           children: [
             Container(
+              
               color: AppTheme.blueColor,
               constraints: BoxConstraints(
-                minHeight: size.height - 56,
+                minHeight: size.height ,
               ),
               child: Center(
                 child: Column(

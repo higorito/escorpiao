@@ -10,8 +10,8 @@ import 'package:location/location.dart';
 import 'package:permission_handler/permission_handler.dart'
     as HandlerPermission;
 
+import '../../services/get_casos_service.dart';
 import 'data/ubs_data.dart';
-import 'ubs_repository.dart';
 
 class MapsPlace extends StatefulWidget {
   const MapsPlace({super.key});
@@ -70,33 +70,36 @@ class _MapsPlaceState extends State<MapsPlace> {
     const LatLng(-20.012303737314173, -45.970747217929684),
   ];
 
-  List<String> docsID = [];
+  List<String> docIds = [];
 
   Future getDocsID() async {
     await FirebaseFirestore.instance.collection('casos').get().then(
           (snapshot) => snapshot.docs.forEach(
             (doc) {
-              docsID.add(doc.reference.id);
+              docIds.add(doc.reference.id);
             },
           ),
         );
   }
 
+  // Future<List<LatLng>> getCasos() async {
+  //   for (var docId in docIds) {
+  //     List<LatLng> latLngList =
+  //         await GetCasosService.getCasesCoordinates(docId);
+  //     print('LISTAAAA: $latLngList');
+  //   }
+  //   return [];
+  // }
+
   final List<LatLng> localEscorpiao = [];
 
   Future getLocalEscorpiao() async {
-    await FirebaseFirestore.instance.collection('casos').get().then(
-          (snapshot) => snapshot.docs.forEach(
-            (doc) {
-              localEscorpiao.add(
-                LatLng(
-                  doc['latLong[Latitude]'] as double,
-                  doc['latLong[Longiture]'] as double,
-                ),
-              );
-            },
-          ),
-        );
+    for (var docId in docIds) {
+      List<LatLng> latLngList =
+          await GetCasosService.getCasesCoordinates(docId);
+      print('LISTAAAA: $latLngList');
+      localEscorpiao.addAll(latLngList);
+    }
   }
 
   var isEscorpiao = false;
@@ -111,11 +114,10 @@ class _MapsPlaceState extends State<MapsPlace> {
   void initState() {
     super.initState();
     getDocsID();
-    getLocalEscorpiao();
     _checkLocationPermission();
     addCustomMarkerYou();
     createMarkersUbs(ubsData);
-    createMarkersEscorpioes(localEscorpiao);
+
     WidgetsBinding.instance
         .addPostFrameCallback((_) async => await fetchLocationUpdate());
   }
@@ -335,7 +337,9 @@ class _MapsPlaceState extends State<MapsPlace> {
                         height: 20,
                       ),
                       FloatingActionButton(
-                        onPressed: () {
+                        onPressed: () async {
+                          await getLocalEscorpiao();
+                          createMarkersEscorpioes(localEscorpiao);
                           setState(() {
                             isEscorpiao = !isEscorpiao;
                           });
@@ -354,9 +358,7 @@ class _MapsPlaceState extends State<MapsPlace> {
 
   addMarkers(String mkID, LatLng position, bool vc, String image) async {
     // var markerIcon = await BitmapDescriptor.fromAssetImage(const ImageConfiguration(size: Size(1, 1)), 'assets/icons/hospital.png' );
-
     var icon;
-
     vc ? icon = BitmapDescriptor.hueAzure : icon = BitmapDescriptor.hueRed;
 
     var marker = Marker(
@@ -529,6 +531,7 @@ class _MapsPlaceState extends State<MapsPlace> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
+                      flex: 4,
                       child: Container(
                         width: 250,
                         height: 150,
@@ -543,6 +546,9 @@ class _MapsPlaceState extends State<MapsPlace> {
                           borderRadius: BorderRadius.circular(24),
                         ),
                       ),
+                    ),
+                    const SizedBox(
+                      height: 12,
                     ),
                     const Expanded(
                       child: Text(
@@ -598,11 +604,11 @@ class _MapsPlaceState extends State<MapsPlace> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
-                      flex: 4,
+                      flex: 5,
                       child: Container(
                         width: 250,
                         height: 150,
-                        padding: const EdgeInsets.all(8),
+                        
                         decoration: BoxDecoration(
                           image: DecorationImage(
                             image: NetworkImage(ubs.image),
@@ -622,7 +628,9 @@ class _MapsPlaceState extends State<MapsPlace> {
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
+                          
                         ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
                   ],

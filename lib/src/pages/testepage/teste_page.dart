@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:escorpionico_proj/src/pages/read/get_casos.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../../services/get_casos_service.dart';
 import '../read/get_user_name.dart';
 
 class TestePage extends StatefulWidget {
@@ -24,8 +26,19 @@ class _TestePageState extends State<TestePage> {
         );
   }
 
+  Future<List<LatLng>> getCasos() async{
+    for (var docId in docIds) {
+      List<LatLng> latLngList = await GetCasosService.getCasesCoordinates(docId);
+      print('LISTAAAA: $latLngList');
+    }
+    return [];
+  }
+
+
+
   @override
   void initState() {
+    getDocsID();
     
     super.initState();
   }
@@ -36,23 +49,13 @@ class _TestePageState extends State<TestePage> {
       appBar: AppBar(
         title: const Text('Teste'),
       ),
-      body:Center(
-        child: Expanded(
-          flex: 2,
-          child: FutureBuilder(
-            future: getDocsID(),
-            builder: (context, snapshot) {
-              return ListView.builder(
-                itemCount: docIds.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: GetCasos(documentId: docIds[index]),
-                  );
-                },
-              );
-            },
-          ),
-        ),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () {
+             getCasos();
+          },
+          child: const Text('Get Casos'),
+        )
       ),
     );
   }

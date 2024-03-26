@@ -8,6 +8,7 @@ import 'package:escorpionico_proj/src/theme/theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import 'NovoCasoSimplificadoPage/simplificado_page.dart';
 import 'maps_page/maps_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -56,7 +57,7 @@ class _HomePageState extends State<HomePage> {
         padding: EdgeInsets.zero,
         children: <Widget>[
           DrawerHeader(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: AppTheme.blueColor,
             ),
             child: Column(
@@ -66,12 +67,12 @@ class _HomePageState extends State<HomePage> {
                   child: CircleAvatar(
                     radius: 50,
                     //imagem do usuario vindo do firebase auth
-                    backgroundImage: Image(image: (FirebaseAuth.instance.currentUser!.photoURL != null)?foto.image: AssetImage('assets/icons/avatar.png') ).image,
+                    backgroundImage: Image(image: (FirebaseAuth.instance.currentUser!.photoURL != null)?foto.image: const AssetImage('assets/icons/avatar.png') ).image,
                         
                   ),
                 ),
-                Expanded(
-                    child: const Text(
+                const Expanded(
+                    child: Text(
                   'EscorpMap',
                   style: TextStyle(color: Colors.white, fontSize: 24),
                 )),
@@ -136,7 +137,7 @@ class _HomePageState extends State<HomePage> {
                   });
             },
           ),
-          SizedBox(
+          const SizedBox(
             height: 100,
           ),
           ListTile(
@@ -187,7 +188,7 @@ class _HomePageState extends State<HomePage> {
               const Text(
                 'EscorpMap',
                 style: TextStyle(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w700,
                     fontSize: 28,
                     color: AppTheme.blueColor,
                     letterSpacing: 1.5),
@@ -196,7 +197,7 @@ class _HomePageState extends State<HomePage> {
                 (usuario != null) ? 'Seja bem vindo, $usuario!': 'Seja bem vindo, ${FirebaseAuth.instance.currentUser!.email!.substring(0, FirebaseAuth.instance.currentUser!.email!.indexOf('@'))}! ',
                 
                 style:
-                    const TextStyle(fontWeight: FontWeight.w400, fontSize: 20),
+                    const TextStyle(fontWeight: FontWeight.w400, fontSize: 15),
               ),
               const SizedBox(
                 height: 10,
@@ -225,19 +226,30 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 12),
+                padding: const EdgeInsets.only(left: 12, right: 12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(
                       height: 12,
                     ),
-                    const Text(
-                      'Casos recentes',
-                      style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme.blueColor),
+                    const Row(
+                      children: [
+                        Text(
+                          'Casos recentes',
+                          style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: AppTheme.blueColor),
+                        ),
+                        SizedBox(
+                          width: 6,
+                        ),
+                        Icon(
+                          Icons.warning_amber_rounded,
+                          color: AppTheme.blueColor,
+                        ),
+                      ],
                     ),
                     SizedBox(
                       height: size.height * 0.15,
@@ -258,42 +270,80 @@ class _HomePageState extends State<HomePage> {
                     const SizedBox(
                       height: 12,
                     ),
-                    const Text(
-                      'Adicionar novo caso',
-                      style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme.blueColor),
-                    ),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.6,
-                      height: 58,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const AddNovosCasosPage()));
-                        },
-                        child: const Text(
+                    const Row(
+                      children: [
+                        Text(
                           'Adicionar novo caso',
-                          style: TextStyle(fontSize: 18),
+                          style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: AppTheme.blueColor),
                         ),
-                      ),
+                        SizedBox(width: 6,),
+                        Icon( Icons.add_circle_outline, color: AppTheme.blueColor, size: 26,)
+                      ],
                     ),
                     const SizedBox(
                       height: 12,
                     ),
-                    const Text(
-                      'Visualizar os casos e UBSs próximas',
-                      style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme.blueColor),
+                    Row(
+                      children: [
+                        Expanded(
+                          
+                          child: SizedBox(
+                            height: 58,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const AddNovosCasosPage()));
+                              },
+                              child: const Text(
+                                'Novo caso',
+                                style: TextStyle(fontSize: 18),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 12,
+                        ),
+                        Expanded(
+                          child: SizedBox(
+                            height: 58,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => NovoCasoSimplificadoPage()));
+                              },
+                              child: const Text(
+                                'Caso Simples',
+                                style: TextStyle(fontSize: 18),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 12,
+                    ),
+                    const Row(
+                      children: [
+                        Text(
+                          'Casos e UBSs próximas',
+                          style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: AppTheme.blueColor),
+                        ),
+                        SizedBox(width: 6,),
+                        Icon( Icons.map_outlined, color: AppTheme.blueColor, size: 26,)
+                      ],
                     ),
                     const SizedBox(
                       height: 12,

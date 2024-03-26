@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:validatorless/validatorless.dart';
 
+import '../home_page.dart';
+
 class AgenteSaudeRegisterPage extends StatefulWidget {
   const AgenteSaudeRegisterPage({super.key});
 
@@ -43,7 +45,7 @@ class _AgenteSaudeRegisterPageState extends State<AgenteSaudeRegisterPage> {
 
           showSnackbarMessage(context, 'Usuário criado com sucesso');
           Navigator.of(context).pop();
-          await Navigator.of(context).pushReplacementNamed('/2-register');
+          await Navigator.push(context,  MaterialPageRoute(builder: (context) => HomePage()));
         } else {
           showSnackbarMessage(context, 'As senhas não coincidem');
         }
