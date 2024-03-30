@@ -11,6 +11,7 @@ import 'package:permission_handler/permission_handler.dart'
     as HandlerPermission;
 
 import '../../services/get_casos_service.dart';
+import '../../utils/loading.dart';
 import 'data/ubs_data.dart';
 
 class MapsPlace extends StatefulWidget {
@@ -94,6 +95,9 @@ class _MapsPlaceState extends State<MapsPlace> {
   final List<LatLng> localEscorpiao = [];
 
   Future getLocalEscorpiao() async {
+    setState(() {
+      isLoading = true;
+    });
     for (var docId in docIds) {
       List<LatLng> latLngList =
           await GetCasosService.getCasesCoordinates(docId);
@@ -109,6 +113,8 @@ class _MapsPlaceState extends State<MapsPlace> {
   final MarkerDataSet ubsData = MarkerDataSet();
 
   BitmapDescriptor customIcon = BitmapDescriptor.defaultMarker;
+
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -131,9 +137,7 @@ class _MapsPlaceState extends State<MapsPlace> {
         centerTitle: true,
       ),
       body: posAtual == null
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
+          ? const CustomLoadingWidget()
           : Stack(
               children: [
                 Column(
@@ -293,6 +297,8 @@ class _MapsPlaceState extends State<MapsPlace> {
                                       ),
                                       child: Column(
                                         children: [
+                                          Text('AINDA NÃO IMPLEMENTADO'),
+                                          
                                           Row(
                                             children: [
                                               Checkbox(
@@ -342,10 +348,18 @@ class _MapsPlaceState extends State<MapsPlace> {
                           createMarkersEscorpioes(localEscorpiao);
                           setState(() {
                             isEscorpiao = !isEscorpiao;
+                            isLoading = false;
                           });
                         },
-                        child: const Icon(
-                          Icons.filter_alt,
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          child: Expanded(
+                              child: !isLoading
+                                  ? Image.asset(
+                                      images[1],
+                                      fit: BoxFit.cover,
+                                    )
+                                  : const CircularProgressIndicator()),
                         ),
                       ),
                     ],
@@ -608,7 +622,6 @@ class _MapsPlaceState extends State<MapsPlace> {
                       child: Container(
                         width: 250,
                         height: 150,
-                        
                         decoration: BoxDecoration(
                           image: DecorationImage(
                             image: NetworkImage(ubs.image),
@@ -628,7 +641,6 @@ class _MapsPlaceState extends State<MapsPlace> {
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          
                         ),
                         textAlign: TextAlign.center,
                       ),

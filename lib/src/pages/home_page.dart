@@ -7,8 +7,10 @@ import 'package:escorpionico_proj/src/pages/testepage/teste_page.dart';
 import 'package:escorpionico_proj/src/theme/theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 
 import 'NovoCasoSimplificadoPage/simplificado_page.dart';
+import 'emergencia/emergencia_page.dart';
 import 'maps_page/maps_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -54,7 +56,6 @@ class _HomePageState extends State<HomePage> {
   Drawer drawer(BuildContext context) {
     return Drawer(
       child: ListView(
-          
         padding: EdgeInsets.zero,
         children: <Widget>[
           DrawerHeader(
@@ -68,8 +69,13 @@ class _HomePageState extends State<HomePage> {
                   child: CircleAvatar(
                     radius: 50,
                     //imagem do usuario vindo do firebase auth
-                    backgroundImage: Image(image: (FirebaseAuth.instance.currentUser!.photoURL != null)?foto.image: const AssetImage('assets/icons/avatar.png') ).image,
-                        
+                    backgroundImage: Image(
+                            image: (FirebaseAuth
+                                        .instance.currentUser!.photoURL !=
+                                    null)
+                                ? foto.image
+                                : const AssetImage('assets/icons/avatar.png'))
+                        .image,
                   ),
                 ),
                 const Expanded(
@@ -110,13 +116,13 @@ class _HomePageState extends State<HomePage> {
                   });
             },
           ),
-          ListTile(
-            title: const Text('Testes'),
-            onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const TestePage()));
-            },
-          ),
+          // ListTile(
+          //   title: const Text('Testes'),
+          //   onTap: () {
+          //     Navigator.push(context,
+          //         MaterialPageRoute(builder: (context) => const TestePage()));
+          //   },
+          // ),
           ListTile(
             title: const Text('Termos de uso'),
             onTap: () {
@@ -138,12 +144,12 @@ class _HomePageState extends State<HomePage> {
                   });
             },
           ),
-          
           ListTile(
             title: const Text('Sair'),
             onTap: () {
               _showDialog(context);
-            },),
+            },
+          ),
         ],
       ),
     );
@@ -162,9 +168,14 @@ class _HomePageState extends State<HomePage> {
         );
   }
 
-  final usuario = (FirebaseAuth.instance.currentUser!.email != null) ? FirebaseAuth.instance.currentUser!.displayName: Text(FirebaseAuth.instance.currentUser!.email!.substring(0, FirebaseAuth.instance.currentUser!.email!.indexOf('@')));
+  final usuario = (FirebaseAuth.instance.currentUser!.email != null)
+      ? FirebaseAuth.instance.currentUser!.displayName
+      : Text(FirebaseAuth.instance.currentUser!.email!.substring(
+          0, FirebaseAuth.instance.currentUser!.email!.indexOf('@')));
 
-  final foto = (FirebaseAuth.instance.currentUser!.photoURL != null)  ? Image.network(FirebaseAuth.instance.currentUser!.photoURL!): Image.asset('assets/icons/avatar.png');
+  final foto = (FirebaseAuth.instance.currentUser!.photoURL != null)
+      ? Image.network(FirebaseAuth.instance.currentUser!.photoURL!)
+      : Image.asset('assets/icons/avatar.png');
 
   // final usuario =  'Higor';
   @override
@@ -172,6 +183,17 @@ class _HomePageState extends State<HomePage> {
     getDocsID();
     super.initState();
   }
+
+  var url_image =
+      'https://www.saude.ce.gov.br/wp-content/uploads/sites/9/2020/12/Banner_CB_Capa_cuidados-basicos-escorpiao_09-12-20.png';
+
+  final List<String> ListImages = [
+    'https://www.saude.ce.gov.br/wp-content/uploads/sites/9/2020/12/Banner_CB_Capa_cuidados-basicos-escorpiao_09-12-20.png',
+    'https://palotina.pr.gov.br/uploads/articles/2023-03/escorpioes-prevencao-ainda-e-a-melhor-solucao-para-evitar-acidentes-3f2e1b09a7.jpeg',
+    'https://scontent.fvag4-1.fna.fbcdn.net/v/t1.6435-9/80327540_2884569578220844_2339922092943736832_n.png?stp=dst-png_p526x296&_nc_cat=105&ccb=1-7&_nc_sid=5f2048&_nc_ohc=-xBhM9h7adgAX8_QZba&_nc_ht=scontent.fvag4-1.fna&oh=00_AfDhV1GhUQKds_y6CdEKDBdFFlEwrgjAs6ZRwNhXUfw1Mw&oe=663005FD',
+    'https://www.extrema.mg.gov.br/wp-content/uploads/2020/01/escorpi%C3%A3o-700x500.jpg',
+    'https://guaratingueta.sp.gov.br/wp-content/uploads/2022/08/escorpianismo-800x445.jpg',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -193,8 +215,9 @@ class _HomePageState extends State<HomePage> {
                     letterSpacing: 1.5),
               ),
               Text(
-                (usuario != null) ? 'Seja bem vindo, $usuario!': 'Seja bem vindo, ${FirebaseAuth.instance.currentUser!.email!.substring(0, FirebaseAuth.instance.currentUser!.email!.indexOf('@'))}! ',
-                
+                (usuario != null)
+                    ? 'Seja bem vindo, $usuario!'
+                    : 'Seja bem vindo, ${FirebaseAuth.instance.currentUser!.email!.substring(0, FirebaseAuth.instance.currentUser!.email!.indexOf('@'))}! ',
                 style:
                     const TextStyle(fontWeight: FontWeight.w400, fontSize: 15),
               ),
@@ -214,159 +237,202 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             children: [
               Container(
-                height: size.height * 0.23,
-                width: double.infinity,
-                color: Colors.grey[300],
-                child: const Center(
-                  child: Text(
-                    'Banner de conscientização ou notícias',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                  ),
-                ),
+                  height: size.height * 0.23,
+                  width: double.infinity,
+                  child: ExpandableCarousel(
+                    options: CarouselOptions(
+                      autoPlay: true,
+                      autoPlayInterval: const Duration(seconds: 5),
+                    ),
+                    items: ListImages.map((e) => Image.network(
+                          e,
+                          fit: BoxFit.cover,
+                        )).toList(),
+                  )),
+              SizedBox(
+                height: size.height * 0.02,
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 12, right: 12),
+              Container(
+                margin: const EdgeInsets.only(left: 12, right: 12),
+                padding: const EdgeInsets.only(
+                    left: 12, right: 12, top: 24, bottom: 24),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.grey[300]!),
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    const Row(
-                      children: [
-                        Text(
-                          'Casos recentes',
-                          style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: AppTheme.blueColor),
-                        ),
-                        SizedBox(
-                          width: 6,
-                        ),
-                        Icon(
-                          Icons.warning_amber_rounded,
-                          color: AppTheme.blueColor,
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: size.height * 0.15,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: 3,
-                        itemBuilder: (BuildContext context, int index) {
-                          return Container(
-                            margin: const EdgeInsets.all(10),
-                            height: 100,
-                            width: 100,
-                            color: Colors.grey[300],
-                            child: Text('Caso ${index + 1}'),
-                          );
-                        },
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    const Row(
-                      children: [
-                        Text(
-                          'Adicionar novo caso',
-                          style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: AppTheme.blueColor),
-                        ),
-                        SizedBox(width: 6,),
-                        Icon( Icons.add_circle_outline, color: AppTheme.blueColor, size: 26,)
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          
-                          child: SizedBox(
-                            height: 58,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const AddNovosCasosPage()));
-                              },
-                              child: const Text(
-                                'Novo caso',
-                                style: TextStyle(fontSize: 18),
-                              ),
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const PageEmergencia()));
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.only(
+                            left: 12, right: 12, top: 12, bottom: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 2,
+                              blurRadius: 3,
+                              offset: const Offset(0, 3),
                             ),
-                          ),
+                          ],
                         ),
-                        const SizedBox(
-                          width: 12,
-                        ),
-                        Expanded(
-                          child: SizedBox(
-                            height: 58,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => NovoCasoSimplificadoPage()));
-                              },
-                              child: const Text(
-                                'Caso Simples',
-                                style: TextStyle(fontSize: 18),
-                              ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.add_alert,
+                              color: Colors.redAccent,
+                              size: size.width * 0.1,
                             ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    const Row(
-                      children: [
-                        Text(
-                          'Casos e UBSs próximas',
-                          style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: AppTheme.blueColor),
-                        ),
-                        SizedBox(width: 6,),
-                        Icon( Icons.map_outlined, color: AppTheme.blueColor, size: 26,)
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.6,
-                      height: 58,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const MapsPlace()));
-                        },
-                        child: const Text(
-                          'Acessar o Mapa',
-                          style: TextStyle(fontSize: 18),
+                            const SizedBox(
+                              width: 12,
+                            ),
+                            const Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Emergência!',
+                                  style: TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.redAccent),
+                                ),
+                                Text(
+                                  'Fui picado! O que fazer?',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                              ],
+                            )
+                          ],
                         ),
                       ),
                     ),
                     const SizedBox(
-                      height: 12,
+                      height: 24,
                     ),
-                    
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const NovoCasoSimplificadoPage()));
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.only(
+                            left: 12, right: 12, top: 12, bottom: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 2,
+                              blurRadius: 3,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.add_location,
+                              color: AppTheme.blueColor,
+                              size: size.width * 0.1,
+                            ),
+                            const SizedBox(
+                              width: 12,
+                            ),
+                            const Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Adicionar novo caso',
+                                  style: TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppTheme.blueColor),
+                                ),
+                                Text(
+                                  'Viu um escorpião? ',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w400),
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 24,
+                    ),
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const MapsPlace()));
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.only(
+                            left: 12, right: 12, top: 12, bottom: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 2,
+                              blurRadius: 3,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.map,
+                              color: AppTheme.blueColor,
+                              size: size.width * 0.1,
+                            ),
+                            const SizedBox(
+                              width: 12,
+                            ),
+                            const Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Mapa de casos',
+                                  style: TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppTheme.blueColor),
+                                ),
+                                Text(
+                                  'Visualize os casos',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w400),
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
