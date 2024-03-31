@@ -184,7 +184,6 @@ class _LoginPageState extends State<LoginPage> {
                   SizedBox(
                     width: size.width * 0.8,
                     height: 48,
-                    
                     child: OutlinedButton(
                       style: OutlinedButton.styleFrom(
                         primary: Colors.white,
@@ -232,14 +231,21 @@ class _LoginPageState extends State<LoginPage> {
                   InkWell(
                     onTap: () async {
                       showDialog(
-                          context: context,
-                          builder: (context) {
-                            return const Center(
-                                child: CircularProgressIndicator());
-                          });
+                        context: context,
+                        builder: (context) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                            
+                        },
+                      );
+                      
                       await AuthServiceGoogle().signGoogle();
-                      Navigator.pop(context);
-                      Navigator.pushReplacement(context,  MaterialPageRoute(builder: (context) =>  HomePage()));
+
+                      Navigator.pushReplacement(context,
+                          MaterialPageRoute(builder: (context) => HomePage()));
+
+                      // Navigator.pushReplacement(context,
+                      //     MaterialPageRoute(builder: (context) => HomePage()));
                     },
                     child: Container(
                       decoration: BoxDecoration(

@@ -1,3 +1,4 @@
+import 'package:escorpionico_proj/src/pages/home_page.dart';
 import 'package:flutter/material.dart';
 
 import '../../services/set_casos_service.dart';
@@ -165,7 +166,8 @@ class _NovoCasoSimplificadoPageState extends State<NovoCasoSimplificadoPage> {
       setState(() {
         isLoading = false;
       });
-      Navigator.pop(context);
+      Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => HomePage()));
     }
   }
 

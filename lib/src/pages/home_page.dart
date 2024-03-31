@@ -23,6 +23,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   void logout() {
     FirebaseAuth.instance.signOut();
+    Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => const AuthPage()));
   }
 
   void _showDialog(BuildContext context) {

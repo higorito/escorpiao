@@ -352,11 +352,12 @@ class _MapsPlaceState extends State<MapsPlace> {
                           });
                         },
                         child: Container(
+                          margin: const EdgeInsets.all(2),
                           padding: const EdgeInsets.all(10),
                           child: Expanded(
                               child: !isLoading
                                   ? Image.asset(
-                                      images[1],
+                                      'assets/icons/scorpion.png',
                                       fit: BoxFit.cover,
                                     )
                                   : const CircularProgressIndicator()),
