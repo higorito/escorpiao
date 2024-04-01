@@ -234,16 +234,22 @@ class _LoginPageState extends State<LoginPage> {
                         context: context,
                         builder: (context) {
                           return const Center(
-                              child: CircularProgressIndicator());
+                              child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                                AppTheme.blueColor),
+                              ));
                             
                         },
                       );
                       
                       await AuthServiceGoogle().signGoogle();
 
+                      Navigator.of(context).pop();
+                      
+
                       Navigator.pushReplacement(context,
                           MaterialPageRoute(builder: (context) => HomePage()));
-
+                    
                       // Navigator.pushReplacement(context,
                       //     MaterialPageRoute(builder: (context) => HomePage()));
                     },

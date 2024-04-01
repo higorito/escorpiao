@@ -298,7 +298,6 @@ class _MapsPlaceState extends State<MapsPlace> {
                                       child: Column(
                                         children: [
                                           Text('AINDA NÃO IMPLEMENTADO'),
-                                          
                                           Row(
                                             children: [
                                               Checkbox(
@@ -351,17 +350,19 @@ class _MapsPlaceState extends State<MapsPlace> {
                             isLoading = false;
                           });
                         },
-                        child: Container(
-                          margin: const EdgeInsets.all(2),
-                          padding: const EdgeInsets.all(10),
-                          child: Expanded(
-                              child: !isLoading
-                                  ? Image.asset(
-                                      'assets/icons/scorpion.png',
-                                      fit: BoxFit.cover,
-                                    )
-                                  : const CircularProgressIndicator()),
-                        ),
+                        child: !isLoading
+                            ? Container(
+                                margin: const EdgeInsets.all(10),
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image:
+                                        AssetImage('assets/icons/scorpion.png'),
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              )
+                            : const CircularProgressIndicator(),
                       ),
                     ],
                   ),

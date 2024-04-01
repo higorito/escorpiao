@@ -7,33 +7,40 @@ class DocumentBoxWidget extends StatelessWidget {
     required this.uploaded,
     required this.icon,
     required this.labels,
-   
     this.onTap,
   });
 
   final bool uploaded;
   final Widget icon;
   final String labels;
-  
+
   final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    
     return Expanded(
         child: InkWell(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: uploaded ? AppTheme.lightOrange : Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(22),
           border: Border.all(color: AppTheme.orangeColor),
         ),
         child: Column(
           children: [
-            Expanded(child: icon),
-            
+            Expanded(flex: 4, child: icon ) ,
+            Expanded(
+              child: Text(
+                labels,
+                style: TextStyle(
+                  color: uploaded ? Colors.orange : AppTheme.orangeColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                ),
+              ),
+            ),
           ],
         ),
       ),

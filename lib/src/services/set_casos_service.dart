@@ -17,6 +17,7 @@ class SetCasosService {
       CollectionReference casosCollection = _firestore.collection('casos');
 
       await casosCollection.add({
+        'data': DateTime.now(),
         'latLong': GeoPoint(locationData.latitude!, locationData.longitude!),
       });
 

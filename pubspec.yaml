@@ -54,6 +54,8 @@ dependencies:
   flutter_carousel_widget: ^2.2.0
   rive: ^0.13.1
   url_launcher: ^6.2.5
+  firebase_storage: ^11.6.9
+  image_picker: ^1.0.7
   
 
 
