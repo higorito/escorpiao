@@ -354,7 +354,7 @@ class _MapsPlaceState extends State<MapsPlace> {
                             ? Container(
                                 margin: const EdgeInsets.all(10),
                                 padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
+                                decoration: const BoxDecoration(
                                   image: DecorationImage(
                                     image:
                                         AssetImage('assets/icons/scorpion.png'),

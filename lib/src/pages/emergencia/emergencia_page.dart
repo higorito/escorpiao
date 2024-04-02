@@ -212,7 +212,7 @@ class _PageEmergenciaState extends State<PageEmergencia> {
 
   Future<void> _adicionarCaso() async {
     if (_formKey.currentState!.validate()) {
-      await SetCasosService().adicionarCaso();
+      await SetCasosService().adicionarCaso('Emergência', 1, _pergunta2Controller.text, null);
       showSnackbarMessage(context, 'Caso criado com sucesso');
       setState(() {
         isLoading = false;

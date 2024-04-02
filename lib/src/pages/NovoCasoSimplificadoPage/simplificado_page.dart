@@ -1,5 +1,6 @@
 import 'package:escorpionico_proj/src/pages/NovoCasoSimplificadoPage/widgets/documento.dart';
 import 'package:escorpionico_proj/src/pages/home_page.dart';
+import 'package:escorpionico_proj/src/services/estado_foto.dart';
 import 'package:escorpionico_proj/src/theme/theme.dart';
 import 'package:flutter/material.dart';
 
@@ -23,7 +24,7 @@ class _NovoCasoSimplificadoPageState extends State<NovoCasoSimplificadoPage> {
 
   bool isLoading = false;
 
-  int? selectedIndex = -1;
+  int selectedIndex = -1;
 
   void qualCaso(bool value) {
     if (value) {
@@ -46,6 +47,8 @@ class _NovoCasoSimplificadoPageState extends State<NovoCasoSimplificadoPage> {
     'https://via.placeholder.com/150',
     'https://via.placeholder.com/150',
   ];
+
+  final FirebaseImageUploader uploadImageService = FirebaseImageUploader();
 
   @override
   void initState() {
@@ -109,15 +112,18 @@ class _NovoCasoSimplificadoPageState extends State<NovoCasoSimplificadoPage> {
                   height: size.height * 0.13,
                   width: size.width * 0.4,
                   child: DocumentBoxWidget(
-                    icon: Icon(Icons.add_a_photo, size: size.width * 0.1),
+                    icon: Image.asset('assets/icons/photo-camera.png'),
                     labels: 'Foto do local',
                     uploaded: false,
                     onTap: () {
                       showDialog(
                           context: context,
-                          builder: (context) => const AlertDialog(
-                                title: Text('Envie sua Imagem'),
-                                content: FirebaseImageUploader(),
+                          builder: (context) => AlertDialog(
+                                title: const Text('Envie sua Imagem'),
+                                content: SizedBox(
+                                    width: size.width * 0.9,
+                                    height: size.height * 0.5,
+                                    child: const FirebaseImageUploader()),
                               ));
                     },
                   ),
@@ -131,43 +137,46 @@ class _NovoCasoSimplificadoPageState extends State<NovoCasoSimplificadoPage> {
                 const SizedBox(
                   height: 10,
                 ),
-                //grid de tipos de escorpião
+
                 SizedBox(
                   height: size.height * 0.45,
                   width: size.width * 0.95,
-                  child: GridView.builder(
-                    itemCount: imageUrls.length,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 4.0,
-                      mainAxisSpacing: 4.0,
-                    ),
-                    itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            selectedIndex = index;
-                          });
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: index == selectedIndex
-                                  ? Colors.redAccent
-                                  : Colors.transparent,
-                              width: 5.0,
+                  child: SizedBox.expand(
+                    child: GridView.builder(
+                      itemCount: imageUrls.length,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 4.0,
+                        mainAxisSpacing: 4.0,
+                      ),
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedIndex = index;
+                            });
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: index == selectedIndex
+                                    ? Colors.redAccent
+                                    : Colors.transparent,
+                                width: 5.0,
+                              ),
+                            ),
+                            child: Image.network(
+                              imageUrls[index],
+                              fit: BoxFit.cover,
                             ),
                           ),
-                          child: Image.network(
-                            imageUrls[index],
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   ),
                 ),
+
                 const SizedBox(
                   height: 10,
                 ),
@@ -265,13 +274,13 @@ class _NovoCasoSimplificadoPageState extends State<NovoCasoSimplificadoPage> {
         return;
       }
 
-      await _adicionarCaso();
-    } 
+      await _adicionarCaso(selectedIndex, _pergunta2Controller.text);
+    }
   }
 
-  Future<void> _adicionarCaso() async {
+  Future<void> _adicionarCaso(int slINdex, String per) async {
     if (_formKey.currentState!.validate()) {
-      await SetCasosService().adicionarCaso();
+      await SetCasosService().adicionarCaso('avistamento',slINdex, per, AppState().nomeFoto);
       showSnackbarMessage(context, 'Caso criado com sucesso');
       setState(() {
         isLoading = false;
