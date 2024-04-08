@@ -28,14 +28,7 @@ class _MapsPlaceState extends State<MapsPlace> {
 
   LatLng? posAtual;
 
-  // late final GoogleMapController _mapController;
-
   Map<String, Marker> _markers = {};
-
-  // static const destino = LatLng(-20.014471165111992, -45.97834020445445);
-  // static const bambui = LatLng(-20.014442652072827, -45.976337386374325);
-
-  // static const pos_default = LatLng(-20.01163940586836, -45.97828215465096);
 
   MapType _tipoMapa = MapType.normal;
 
@@ -56,19 +49,6 @@ class _MapsPlaceState extends State<MapsPlace> {
     'assets/icons/scorpion.png',
     'assets/icons/sinal-de-alerta.png'
         'assets/icons/homem.png'
-  ];
-
-  final List<LatLng> localAvistado = [
-    const LatLng(-20.014590160341797, -45.98005804062814),
-    const LatLng(-20.01059074560931, -45.97601834533593),
-    const LatLng(-20.012303737314173, -45.970747217929684),
-    const LatLng(-20.00966248795663, -45.97842906392004),
-    const LatLng(-20.016457062657167, -45.97222779734214),
-    const LatLng(-20.015090898017174, -45.977450327874834),
-    const LatLng(-20.017600053158354, -45.9804094910854),
-    const LatLng(-20.013590160341797, -45.98005804062814),
-    const LatLng(-20.01059074560931, -45.97601834533593),
-    const LatLng(-20.012303737314173, -45.970747217929684),
   ];
 
   List<String> docIds = [];
@@ -168,9 +148,6 @@ class _MapsPlaceState extends State<MapsPlace> {
                             onMapCreated: (controller) {
                               _customInfoWindowController.googleMapController =
                                   controller;
-                              // addMarkers('TESTE', destino, false);
-                              // addMarkers('bambui cidade boa', bambui, false);
-                              // addMarkers('VOCE', posAtual!, true, '');
                             },
                             markers: isEscorpiao
                                 ? {
@@ -304,7 +281,7 @@ class _MapsPlaceState extends State<MapsPlace> {
                                       ),
                                       child: Column(
                                         children: [
-                                          Text('AINDA NÃO IMPLEMENTADO'),
+                                          const Text('AINDA NÃO IMPLEMENTADO'),
                                           Row(
                                             children: [
                                               Checkbox(
@@ -380,7 +357,6 @@ class _MapsPlaceState extends State<MapsPlace> {
   }
 
   addMarkers(String mkID, LatLng position, bool vc, String image) async {
-    // var markerIcon = await BitmapDescriptor.fromAssetImage(const ImageConfiguration(size: Size(1, 1)), 'assets/icons/hospital.png' );
     var icon;
     vc ? icon = BitmapDescriptor.hueAzure : icon = BitmapDescriptor.hueRed;
 
@@ -530,20 +506,14 @@ class _MapsPlaceState extends State<MapsPlace> {
     return BitmapDescriptor.fromBytes(imageData);
   }
 
-  void gerarObjetoFirebase(List<String> docIds){
+  void gerarObjetoFirebase(List<String> docIds) {
     //iterar sobre docsIds e adicionar em documetos
-    // FirebaseFirestore.instance.collection('casos').doc(docIds[0]).get().then((value) => null)
-     
   }
 
   Future<void> createMarkersEscorpioes(List<LatLng> locations) async {
     final Uint8List markerIcon = await getBytesFromAsset(images[1], 100);
 
-    
-
     for (var location in locations) {
-
-
       escorpiaoMarker.add(
         Marker(
           markerId: MarkerId('escorpiao ${location.latitude}'),
@@ -571,7 +541,7 @@ class _MapsPlaceState extends State<MapsPlace> {
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           image: const DecorationImage(
-                            image: (casos.) ,
+                            image: NetworkImage(''),
                             fit: BoxFit.fitWidth,
                             filterQuality: FilterQuality.high,
                           ),
@@ -604,17 +574,8 @@ class _MapsPlaceState extends State<MapsPlace> {
     setState(() {});
   }
 
-  // void _loadData() {
-  //   // ignore: avoid_single_cascade_in_expression_statements
-  //   MarkerDataSet()
-  //     ..markers.forEach((element) {
-  //       addMarkers(element.mkID, element.position, element.vc, element.image);
-  //     });
-  // }
-
   Future<void> createMarkersUbs(MarkerDataSet ubs) async {
     final Uint8List markerIcon = await getBytesFromAsset(images[0], 90);
-    print('------------${ubs.markers.length}------------');
     for (var ubs in ubs.markers) {
       ubsMarker.add(
         Marker(
@@ -684,85 +645,4 @@ class _MapsPlaceState extends State<MapsPlace> {
       });
     });
   }
-
-  //   final Uint8List markerIcon = await getBytesFromAsset(images[3], 150);
-
-  //   setState(() {
-  //     customIcon = BitmapDescriptor.fromBytes(markerIcon);
-  //   });
-  // }
 }
-
-
-
-
-//metodos nao usados mais que pode ser util
-  // void _addMarker() {
-  //   setState(() {
-  //     _markers.addAll({
-  //       'teste': Marker(
-  //         markerId: const MarkerId('add local'),
-  //         icon: BitmapDescriptor.defaultMarker,
-  //         position: posAtual!,
-  //         infoWindow: const InfoWindow(
-  //             title: 'adicionei', snippet: 'teste de adicionar local '),
-  //       ),
-  //     });
-  //   });
-  // }
-
-  // Future<void> _novaPos() async {
-  //   const LatLng novaPos = LatLng(-20.014442652072827, -45.976337386374325);
-  //   _mapController.animateCamera(
-  //     CameraUpdate.newCameraPosition(
-  //       const CameraPosition(
-  //         target: novaPos,
-  //         zoom: 16,
-  //       ),
-  //     ),
-  //   );
-
-  //   setState(() {
-  //     const marker = Marker(
-  //       markerId: MarkerId('novaPos'),
-  //       icon: BitmapDescriptor.defaultMarker,
-  //       position: novaPos,
-  //       infoWindow: InfoWindow(
-  //         title: 'nova posicao',
-  //         snippet: 'teste de nova posicao',
-  //       ),
-  //     );
-
-  //     _markers
-  //       ..clear()
-  //       ..addAll({'novaPos': marker});
-  //   });
-  // }
-
-  // Future<void> _goPosDefault() async {
-  //   const posDefault = pos_default;
-  //   _mapController.animateCamera(
-  //     CameraUpdate.newCameraPosition(
-  //       const CameraPosition(
-  //         target: pos_default,
-  //         zoom: 16,
-  //       ),
-  //     ),
-  //   );
-
-  //   setState(() {
-  //     const marker = Marker(
-  //       markerId: MarkerId('pos padrao'),
-  //       icon: BitmapDescriptor.defaultMarker,
-  //       position: posDefault,
-  //       infoWindow: InfoWindow(
-  //         title: 'posicao padrao',
-  //         snippet: 'teste de posicao padrao',
-  //       ),
-  //     );
-
-  //     _markers
-  //       ..clear()
-  //       ..addAll({'pos padrao': marker});
-  //   });
-  // }

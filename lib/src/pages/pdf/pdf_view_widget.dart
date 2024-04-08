@@ -108,8 +108,9 @@ class _MyPdfViewerState extends State<MyPdfViewer> {
       });
       return;
     }
+
     const url =
-        'http://vigilancia.saude.mg.gov.br/index.php/download/folder-sobre-escorpiao-ses/?wpdmdl=3975'; // Substitua pela URL do seu PDF
+        'http://vigilancia.saude.mg.gov.br/index.php/download/folder-sobre-escorpiao-ses/?wpdmdl=3975'; 
     final response = await http.get(Uri.parse(url));
     final bytes = response.bodyBytes;
 
