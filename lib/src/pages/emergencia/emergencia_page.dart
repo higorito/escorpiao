@@ -102,7 +102,9 @@ class _PageEmergenciaState extends State<PageEmergencia> {
                     border: OutlineInputBorder(),
                     contentPadding: EdgeInsets.symmetric(horizontal: 8),
                   ),
+                  value: 'Selecione uma opção',
                   items: <String>[
+                    'Selecione uma opção',
                     'Lote Vago',
                     'Cemitério',
                     'Depósito de Entulho',
@@ -166,7 +168,7 @@ class _PageEmergenciaState extends State<PageEmergencia> {
                         );
                       });
                     },
-                    child: Row(
+                    child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.phone, color: Colors.white),

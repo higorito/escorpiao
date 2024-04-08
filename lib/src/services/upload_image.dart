@@ -6,7 +6,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../utils/permissao.dart';
 
 class FirebaseImageUploader extends StatefulWidget {
   const FirebaseImageUploader({super.key});
@@ -21,7 +20,7 @@ class _FirebaseImageUploaderState extends State<FirebaseImageUploader> {
 
 
   Future<void> _getImageFromGallery() async {
-    PermissionManager.requestCameraAndGalleryPermission(context);
+    // PermissionManager.requestCameraAndGalleryPermission(context);
 
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
      
@@ -35,7 +34,7 @@ class _FirebaseImageUploaderState extends State<FirebaseImageUploader> {
   }
 
   Future<void> _getImageFromCamera() async {
-    PermissionManager.requestCameraAndGalleryPermission(context);
+    // PermissionManager.requestCameraAndGalleryPermission(context); arrumar
     
     final pickedFile = await _picker.pickImage(source: ImageSource.camera);
 

@@ -129,6 +129,13 @@ class _MapsPlaceState extends State<MapsPlace> {
   }
 
   @override
+  void dispose() {
+    _customInfoWindowController.dispose();
+
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
@@ -523,10 +530,20 @@ class _MapsPlaceState extends State<MapsPlace> {
     return BitmapDescriptor.fromBytes(imageData);
   }
 
+  void gerarObjetoFirebase(List<String> docIds){
+    //iterar sobre docsIds e adicionar em documetos
+    // FirebaseFirestore.instance.collection('casos').doc(docIds[0]).get().then((value) => null)
+     
+  }
+
   Future<void> createMarkersEscorpioes(List<LatLng> locations) async {
     final Uint8List markerIcon = await getBytesFromAsset(images[1], 100);
 
+    
+
     for (var location in locations) {
+
+
       escorpiaoMarker.add(
         Marker(
           markerId: MarkerId('escorpiao ${location.latitude}'),
@@ -554,8 +571,7 @@ class _MapsPlaceState extends State<MapsPlace> {
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           image: const DecorationImage(
-                            image: NetworkImage(
-                                'https://gurupi.to.gov.br/wp-content/uploads/2022/08/image-1-1-1.png'),
+                            image: (casos.) ,
                             fit: BoxFit.fitWidth,
                             filterQuality: FilterQuality.high,
                           ),

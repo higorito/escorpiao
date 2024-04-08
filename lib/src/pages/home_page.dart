@@ -12,6 +12,7 @@ import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'NovoCasoSimplificadoPage/simplificado_page.dart';
 import 'emergencia/emergencia_page.dart';
 import 'maps_page/maps_page.dart';
+import 'pdf/pdf_view_widget.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({super.key});
@@ -23,8 +24,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   void logout() {
     FirebaseAuth.instance.signOut();
-    Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const AuthPage()));
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => const AuthPage()));
   }
 
   void _showDialog(BuildContext context) {
@@ -425,6 +426,66 @@ class _HomePageState extends State<HomePage> {
                                 ),
                                 Text(
                                   'Visualize os casos',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w400),
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 24,
+                    ),
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                MyPdfViewer(),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.only(
+                            left: 12, right: 12, top: 12, bottom: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 2,
+                              blurRadius: 3,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.info_rounded,
+                              color: AppTheme.blueColor,
+                              size: size.width * 0.1,
+                            ),
+                            const SizedBox(
+                              width: 12,
+                            ),
+                            const Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Como me proteger?',
+                                  style: TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppTheme.blueColor),
+                                ),
+                                Text(
+                                  'Evitar acidentes com escorpiões',
                                   style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w400),
