@@ -8,4 +8,6 @@ class AppState {
   AppState._internal();
   
   String? nomeFoto;
+
+  bool? fotoCarregada;
 }

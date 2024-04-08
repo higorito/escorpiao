@@ -1,5 +1,6 @@
 import 'package:escorpionico_proj/src/pages/maps_place/maps_place.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../services/set_casos_service.dart';
 import '../home_page.dart';
@@ -16,10 +17,8 @@ class _PageEmergenciaState extends State<PageEmergencia> {
   bool isLoading = false;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _pergunta1Controller = TextEditingController();
-  final TextEditingController _pergunta2Controller = TextEditingController();
-  final TextEditingController _pergunta3Controller = TextEditingController();
-  final TextEditingController _pergunta4Controller = TextEditingController();
+  final TextEditingController _parteCorpo = TextEditingController();
+  final TextEditingController _moraPerto = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -37,22 +36,57 @@ class _PageEmergenciaState extends State<PageEmergencia> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('Aonde foi picado?',
+                const Text('Aonde foi picado?',
                     style:
                         TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-                SizedBox(height: 10),
-                Container(
-                  color: Colors.grey[200],
-                  height: size.height * 0.32,
-                  width: size.width * 0.5,
-                  child: Text('aqui vai um boneco'),
+                const SizedBox(height: 10),
+                //onde foi picado
+                DropdownButtonFormField<String>(
+                  validator: (value) {
+                    if (value == null) {
+                      return 'Selecione uma opção';
+                    }
+                    return null;
+                  },
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 8),
+                  ),
+                  value: 'Selecione uma opção',
+                  items: <String>[
+                    'Selecione uma opção',
+                    'Mão',
+                    'Braço',
+                    'Perna',
+                    'Pé',
+                    'Cabeça',
+                    'Costas',
+                    'Barriga',
+                    'Pescoço',
+                    'Rosto',
+                    'Axila',
+                    'Virilha',
+                    'Joelho',
+                    'Tornozelo',
+                    'Outro'
+                  ].map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  onChanged: (String? value) {
+                    setState(() {
+                      _parteCorpo.text = value!;
+                    });
+                  },
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 //sim ou nao
-                Text('Se automedicou ou procurou ajuda médica?',
+                const Text('Se automedicou ou procurou ajuda médica?',
                     style:
                         TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -66,7 +100,7 @@ class _PageEmergenciaState extends State<PageEmergencia> {
                             });
                           },
                         ),
-                        Text('Sim',
+                        const Text('Sim',
                             style: TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.w500)),
                       ],
@@ -81,16 +115,16 @@ class _PageEmergenciaState extends State<PageEmergencia> {
                             });
                           },
                         ),
-                        Text('Não',
+                        const Text('Não',
                             style: TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.w500)),
                       ],
                     ),
                   ],
                 ),
-                SizedBox(height: 10),
-                Text('Mora perto de:'),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
+                const Text('Mora perto de:'),
+                const SizedBox(height: 10),
                 DropdownButtonFormField<String>(
                   validator: (value) {
                     if (value == null) {
@@ -121,7 +155,7 @@ class _PageEmergenciaState extends State<PageEmergencia> {
                   }).toList(),
                   onChanged: (String? value) {
                     setState(() {
-                      _pergunta2Controller.text = value!;
+                      _moraPerto.text = value!;
                     });
                   },
                 ),
@@ -143,30 +177,33 @@ class _PageEmergenciaState extends State<PageEmergencia> {
                   height: size.height * 0.06,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.red,
-                      onPrimary: Colors.white,
+                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.red,
                     ),
                     onPressed: () {
-                      showDialog(context: context, builder: (context) {
-                        return AlertDialog(
-                          title: const Text('Ligar para Emergência'),
-                          content: const Text('vou colocar pra abrir o discador do celular'),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              child: const Text('Cancelar'),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              child: const Text('Ligar'),
-                            ),
-                          ],
-                        );
-                      });
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: const Text('Ligar para Emergência'),
+                              content:
+                                  const Text('Deseja ligar para o número 192?'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text('Cancelar'),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    _makePhoneCall('192');
+                                  },
+                                  child: const Text('Ligar'),
+                                ),
+                              ],
+                            );
+                          });
                     },
                     child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -179,7 +216,7 @@ class _PageEmergenciaState extends State<PageEmergencia> {
                     ),
                   ),
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 //mostrar as ubs mais proximas
                 SizedBox(
                   width: size.width * 0.9,
@@ -190,8 +227,10 @@ class _PageEmergenciaState extends State<PageEmergencia> {
                       onPrimary: Colors.white,
                     ),
                     onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => const MapsPlace()));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const MapsPlace()));
                     },
                     child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -214,7 +253,8 @@ class _PageEmergenciaState extends State<PageEmergencia> {
 
   Future<void> _adicionarCaso() async {
     if (_formKey.currentState!.validate()) {
-      await SetCasosService().adicionarCaso('Emergência', 1, _pergunta2Controller.text, null);
+      await SetCasosService().adicionarCaso('Emergencia', -1, _moraPerto.text,
+          null, ajudaMedicaOrMedicou, _parteCorpo);
       showSnackbarMessage(context, 'Caso criado com sucesso');
       setState(() {
         isLoading = false;
@@ -237,5 +277,13 @@ class _PageEmergenciaState extends State<PageEmergencia> {
         margin: const EdgeInsets.only(bottom: 180, right: 20, left: 20),
       ),
     );
+  }
+
+  Future<void> _makePhoneCall(String phoneNumber) async {
+    final Uri launchUri = Uri(
+      scheme: 'tel',
+      path: phoneNumber,
+    );
+    await launchUrl(launchUri);
   }
 }

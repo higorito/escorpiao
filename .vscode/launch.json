@@ -8,6 +8,7 @@
             "name": "escorpionico_proj",
             "request": "launch",
             "type": "dart"
+            
         },
         {
             "name": "escorpionico_proj (profile mode)",

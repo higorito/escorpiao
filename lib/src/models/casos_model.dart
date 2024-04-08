@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+//TODO: MUDAR UM POUCO AQUI
 class Data {
   String img;
   GeoPoint latLong;

@@ -44,14 +44,17 @@ class _NovoCasoSimplificadoPageState extends State<NovoCasoSimplificadoPage> {
     'https://kelldrin.com.br/wp-content/uploads/2022/08/escorpiao.jpg',
     'https://static.mundoeducacao.uol.com.br/mundoeducacao/conteudo_legenda/fa48f290f347a1a53553286d51baf118.jpg',
     'https://www.biomax-mep.com.br/wp-content/webp-express/webp-images/uploads/2012/05/escorpiao-filhotes.jpg.webp',
-    'https://via.placeholder.com/150',
-    'https://via.placeholder.com/150',
+    
   ];
 
-  final FirebaseImageUploader uploadImageService = FirebaseImageUploader();
+  final FirebaseImageUploader uploadImageService =
+      const FirebaseImageUploader();
+
+  AppState appState = AppState();
 
   @override
   void initState() {
+    appState.fotoCarregada = false;
     _pergunta2Controller.text = 'Selecione uma opção';
     super.initState();
   }
@@ -72,61 +75,38 @@ class _NovoCasoSimplificadoPageState extends State<NovoCasoSimplificadoPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Row(
-                //   mainAxisAlignment: MainAxisAlignment.center,
-                //   children: [
-                //     Row(
-                //       mainAxisAlignment: MainAxisAlignment.center,
-                //       children: [
-                //         const Text('Acidente'),
-                //         Checkbox(
-                //             value: isAvistamento,
-                //             onChanged: (bool? value) {
-                //               qualCaso(value!);
-                //             }),
-                //       ],
-                //     ),
-                //     Row(
-                //       mainAxisAlignment: MainAxisAlignment.center,
-                //       children: [
-                //         const Text('Avistamento'),
-                //         Checkbox(
-                //             value: isAcidente,
-                //             onChanged: (bool? value) {
-                //               qualCaso(!value!);
-                //             }),
-                //       ],
-                //     ),
-                //   ],
-                // ),
-                // const SizedBox(
-                //   height: 28,
-                // ),
                 const Text('Aonde você viu:',
                     style:
                         TextStyle(fontWeight: FontWeight.w500, fontSize: 16)),
                 const SizedBox(
                   height: 10,
                 ),
-                SizedBox(
-                  height: size.height * 0.13,
-                  width: size.width * 0.4,
-                  child: DocumentBoxWidget(
-                    icon: Image.asset('assets/icons/photo-camera.png'),
-                    labels: 'Foto do local',
-                    uploaded: false,
-                    onTap: () {
-                      showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                                title: const Text('Envie sua Imagem'),
-                                content: SizedBox(
-                                    width: size.width * 0.9,
-                                    height: size.height * 0.5,
-                                    child: const FirebaseImageUploader()),
-                              ));
-                    },
-                  ),
+                Builder(
+                  builder: (context) {
+                    return Visibility(
+                      visible: !appState.fotoCarregada!,
+                      child: SizedBox(
+                        height: size.height * 0.13,
+                        width: size.width * 0.4,
+                        child: DocumentBoxWidget(
+                          icon: Image.asset('assets/icons/photo-camera.png'),
+                          labels: 'Foto do local',
+                          uploaded: false,
+                          onTap: () {
+                            showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                      title: const Text('Envie sua Imagem'),
+                                      content: SizedBox(
+                                          width: size.width * 0.9,
+                                          height: size.height * 0.5,
+                                          child: const FirebaseImageUploader()),
+                                    ));
+                          },
+                        ),
+                      ),
+                    );
+                  }
                 ),
                 const SizedBox(
                   height: 16,
@@ -137,7 +117,6 @@ class _NovoCasoSimplificadoPageState extends State<NovoCasoSimplificadoPage> {
                 const SizedBox(
                   height: 10,
                 ),
-
                 SizedBox(
                   height: size.height * 0.45,
                   width: size.width * 0.95,
@@ -176,7 +155,6 @@ class _NovoCasoSimplificadoPageState extends State<NovoCasoSimplificadoPage> {
                     ),
                   ),
                 ),
-
                 const SizedBox(
                   height: 10,
                 ),
@@ -225,7 +203,6 @@ class _NovoCasoSimplificadoPageState extends State<NovoCasoSimplificadoPage> {
                 const Text(
                     'Sua localização atual será enviada junto com o caso.',
                     style: TextStyle(fontWeight: FontWeight.w500)),
-
                 const SizedBox(height: 10),
                 const Text('Verifique as informações antes de continuar:'),
                 const SizedBox(height: 10),
@@ -280,7 +257,8 @@ class _NovoCasoSimplificadoPageState extends State<NovoCasoSimplificadoPage> {
 
   Future<void> _adicionarCaso(int slINdex, String per) async {
     if (_formKey.currentState!.validate()) {
-      await SetCasosService().adicionarCaso('avistamento',slINdex, per, AppState().nomeFoto);
+      await SetCasosService().adicionarCaso(
+          'avistamento', slINdex, per, AppState().nomeFoto, false, '');
       showSnackbarMessage(context, 'Caso criado com sucesso');
       setState(() {
         isLoading = false;

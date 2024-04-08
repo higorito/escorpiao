@@ -10,6 +10,8 @@ import 'package:location/location.dart';
 import 'package:permission_handler/permission_handler.dart'
     as HandlerPermission;
 
+import '../../models/casos_model.dart';
+import '../../services/download_image.dart';
 import '../../services/get_casos_service.dart';
 import '../../utils/loading.dart';
 import 'data/ubs_data.dart';
@@ -47,8 +49,8 @@ class _MapsPlaceState extends State<MapsPlace> {
   List<String> images = [
     'assets/icons/ubs.png',
     'assets/icons/scorpion.png',
-    'assets/icons/sinal-de-alerta.png'
-        'assets/icons/homem.png'
+    'assets/icons/sinal-de-alerta.png',
+    'assets/icons/homem.png'
   ];
 
   List<String> docIds = [];
@@ -63,26 +65,17 @@ class _MapsPlaceState extends State<MapsPlace> {
         );
   }
 
-  // Future<List<LatLng>> getCasos() async {
-  //   for (var docId in docIds) {
-  //     List<LatLng> latLngList =
-  //         await GetCasosService.getCasesCoordinates(docId);
-  //     print('LISTAAAA: $latLngList');
-  //   }
-  //   return [];
-  // }
+  bool show = false;
 
-  final List<LatLng> localEscorpiao = [];
+  final List<Data> localEscorpiao = [];
 
   Future getLocalEscorpiao() async {
     setState(() {
       isLoading = true;
     });
     for (var docId in docIds) {
-      List<LatLng> latLngList =
-          await GetCasosService.getCasesCoordinates(docId);
-      print('LISTAAAA: $latLngList');
-      localEscorpiao.addAll(latLngList);
+      List<Data> dataList = await GetCasosService.getCasesData(docId);
+      localEscorpiao.addAll(dataList);
     }
   }
 
@@ -174,8 +167,8 @@ class _MapsPlaceState extends State<MapsPlace> {
                           ),
                           CustomInfoWindow(
                               controller: _customInfoWindowController,
-                              height: 200,
-                              width: 250,
+                              height: size.height * 0.2,
+                              width: size.width * 0.6,
                               offset: 25),
                         ],
                       ),
@@ -189,6 +182,7 @@ class _MapsPlaceState extends State<MapsPlace> {
                         ),
                       ),
                       child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const Text(
                             'Legenda',
@@ -198,7 +192,8 @@ class _MapsPlaceState extends State<MapsPlace> {
                             ),
                           ),
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisSize: MainAxisSize.max,
                             children: [
                               Container(
                                 width: 30,
@@ -210,7 +205,7 @@ class _MapsPlaceState extends State<MapsPlace> {
                                   ),
                                 ),
                               ),
-                              const Text(' - Unidade de Saúde'),
+                              const Text(' - UBS'),
                               const SizedBox(
                                 width: 20,
                               ),
@@ -224,8 +219,23 @@ class _MapsPlaceState extends State<MapsPlace> {
                                   ),
                                 ),
                               ),
-                              const Text(' - Escorpião avistado'),
+                              const Text(' - Avistamento'),
+                              const SizedBox(
+                                width: 20,
+                              ),
+                              Container(
+                                width: 30,
+                                height: 30,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image: AssetImage(images[2]),
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                              const Text(' - Acidente'),
                             ],
+
                           ),
                         ],
                       ),
@@ -327,7 +337,10 @@ class _MapsPlaceState extends State<MapsPlace> {
                       ),
                       FloatingActionButton(
                         onPressed: () async {
-                          await getLocalEscorpiao();
+                          if (!show) {
+                            await getLocalEscorpiao();
+                            show = true;
+                          }
                           createMarkersEscorpioes(localEscorpiao);
                           setState(() {
                             isEscorpiao = !isEscorpiao;
@@ -506,19 +519,25 @@ class _MapsPlaceState extends State<MapsPlace> {
     return BitmapDescriptor.fromBytes(imageData);
   }
 
-  void gerarObjetoFirebase(List<String> docIds) {
-    //iterar sobre docsIds e adicionar em documetos
-  }
-
-  Future<void> createMarkersEscorpioes(List<LatLng> locations) async {
-    final Uint8List markerIcon = await getBytesFromAsset(images[1], 100);
+  Future<void> createMarkersEscorpioes(List<Data> locations) async {
+    final FirebaseImageDownloader imageDownloader = FirebaseImageDownloader();
 
     for (var location in locations) {
+      Uint8List? imageData = await imageDownloader.getImage(location.img);
+
+      Uint8List defaultImage =
+          await getBytesFromAsset('assets/images/escorp.jpg', 400);
+
+      final Uint8List markerIcon = await getBytesFromAsset(images[1], 100);
+      final Uint8List acidente = await getBytesFromAsset(images[2], 100);
+
       escorpiaoMarker.add(
         Marker(
-          markerId: MarkerId('escorpiao ${location.latitude}'),
-          position: LatLng(location.latitude, location.longitude),
-          icon: BitmapDescriptor.fromBytes(markerIcon),
+          markerId: MarkerId('escorpiao ${location.latLong.latitude}'),
+          position:
+              LatLng(location.latLong.latitude, location.latLong.longitude),
+          icon: BitmapDescriptor.fromBytes(
+              location.tipo == 'avistamento' ? markerIcon : acidente),
           onTap: () {
             _customInfoWindowController.addInfoWindow!(
               Container(
@@ -540,8 +559,8 @@ class _MapsPlaceState extends State<MapsPlace> {
                         height: 150,
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          image: const DecorationImage(
-                            image: NetworkImage(''),
+                          image: DecorationImage(
+                            image: MemoryImage(imageData ?? defaultImage),
                             fit: BoxFit.fitWidth,
                             filterQuality: FilterQuality.high,
                           ),
@@ -552,10 +571,12 @@ class _MapsPlaceState extends State<MapsPlace> {
                     const SizedBox(
                       height: 12,
                     ),
-                    const Expanded(
+                    Expanded(
                       child: Text(
-                        'Escorpiao avistado! Cuidado!',
-                        style: TextStyle(
+                        location.tipo == 'avistamento'
+                            ? 'Escorpião avistado ${location.per2}'
+                            : 'Acidente com escorpião ${location.per2}',
+                        style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
                         ),
@@ -564,7 +585,7 @@ class _MapsPlaceState extends State<MapsPlace> {
                   ],
                 ),
               ),
-              LatLng(location.latitude, location.longitude),
+              LatLng(location.latLong.latitude, location.latLong.longitude),
             );
           },
         ),
@@ -633,7 +654,9 @@ class _MapsPlaceState extends State<MapsPlace> {
         ),
       );
     }
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   void addCustomMarkerYou() async {

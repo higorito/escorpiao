@@ -17,7 +17,7 @@ class FirebaseImageUploader extends StatefulWidget {
 class _FirebaseImageUploaderState extends State<FirebaseImageUploader> {
   File? _imageFile;
   final ImagePicker _picker = ImagePicker();
-
+  AppState appState = AppState();
 
   Future<void> _getImageFromGallery() async {
     // PermissionManager.requestCameraAndGalleryPermission(context);
@@ -62,7 +62,10 @@ class _FirebaseImageUploaderState extends State<FirebaseImageUploader> {
       Reference ref = storage.ref().child('images/${DateTime.now()}.png');
       AppState().nomeFoto = ref.fullPath.replaceAll('images/', '');
       UploadTask uploadTask = ref.putFile(_imageFile!);
-      await uploadTask.whenComplete(() => Navigator.pop(context) );
+      await uploadTask.whenComplete(() {
+        appState.fotoCarregada = true;
+        Navigator.pop(context);
+      } );
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Imagem enviada com sucesso para o Firebase Storage!'),
