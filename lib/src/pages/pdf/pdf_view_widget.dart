@@ -30,6 +30,7 @@ class _MyPdfViewerState extends State<MyPdfViewer> {
         title: const Text('Como lidar com escorpiões'),
       ),
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           _fileDownloaded
               ? Flexible(
@@ -61,7 +62,7 @@ class _MyPdfViewerState extends State<MyPdfViewer> {
                   ),
               )
               : const Center(
-                  child: CircularProgressIndicator(),
+                  child: CircularProgressIndicator.adaptive(),
                 ),
         ],
       ),

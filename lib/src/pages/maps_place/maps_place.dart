@@ -3,6 +3,8 @@ import 'dart:ui' as ui;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:custom_info_window/custom_info_window.dart';
+import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -13,6 +15,7 @@ import 'package:permission_handler/permission_handler.dart'
 import '../../models/casos_model.dart';
 import '../../services/download_image.dart';
 import '../../services/get_casos_service.dart';
+import '../../services/user_profile.dart';
 import '../../utils/loading.dart';
 import 'data/ubs_data.dart';
 
@@ -85,20 +88,23 @@ class _MapsPlaceState extends State<MapsPlace> {
 
   final MarkerDataSet ubsData = MarkerDataSet();
 
-  BitmapDescriptor customIcon = BitmapDescriptor.defaultMarker;
+  BitmapDescriptor customIcon = BitmapDescriptor.defaultMarkerWithHue(200);
 
   bool isLoading = false;
+
+  final UserProfileService _userService = UserProfileService();
+  String? _imageUrl;
 
   @override
   void initState() {
     super.initState();
-    getDocsID();
-    _checkLocationPermission();
-    addCustomMarkerYou();
-    createMarkersUbs(ubsData);
-
     WidgetsBinding.instance
         .addPostFrameCallback((_) async => await fetchLocationUpdate());
+    getDocsID();
+    _checkLocationPermission();
+
+    addCustomMarkerYou();
+    createMarkersUbs(ubsData);
   }
 
   @override
@@ -175,6 +181,7 @@ class _MapsPlaceState extends State<MapsPlace> {
                     ),
                     Expanded(
                         child: Container(
+                      padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         border: Border(
@@ -192,7 +199,7 @@ class _MapsPlaceState extends State<MapsPlace> {
                             ),
                           ),
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             mainAxisSize: MainAxisSize.max,
                             children: [
                               Container(
@@ -235,7 +242,6 @@ class _MapsPlaceState extends State<MapsPlace> {
                               ),
                               const Text(' - Acidente'),
                             ],
-
                           ),
                         ],
                       ),
@@ -342,10 +348,12 @@ class _MapsPlaceState extends State<MapsPlace> {
                             show = true;
                           }
                           createMarkersEscorpioes(localEscorpiao);
-                          setState(() {
-                            isEscorpiao = !isEscorpiao;
-                            isLoading = false;
-                          });
+                          if (mounted) {
+                            setState(() {
+                              isEscorpiao = !isEscorpiao;
+                              isLoading = false;
+                            });
+                          }
                         },
                         child: !isLoading
                             ? Container(
@@ -428,7 +436,9 @@ class _MapsPlaceState extends State<MapsPlace> {
 
     _markers[mkID] = marker;
 
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   Future<void> fetchLocationUpdate() async {
@@ -451,11 +461,13 @@ class _MapsPlaceState extends State<MapsPlace> {
     localizacaoController.onLocationChanged.listen((atualLocalizacao) {
       if (atualLocalizacao.latitude != null &&
           atualLocalizacao.longitude != null) {
-        setState(() {
-          posAtual =
-              LatLng(atualLocalizacao.latitude!, atualLocalizacao.longitude!);
-          _locationData = atualLocalizacao;
-        });
+        if (mounted) {
+          setState(() {
+            posAtual =
+                LatLng(atualLocalizacao.latitude!, atualLocalizacao.longitude!);
+            _locationData = atualLocalizacao;
+          });
+        }
       }
     });
   }
@@ -469,7 +481,9 @@ class _MapsPlaceState extends State<MapsPlace> {
 
     location.onLocationChanged.listen((newLoc) {
       posAtual = LatLng(newLoc.latitude!, newLoc.longitude!);
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     });
   }
 
@@ -569,7 +583,7 @@ class _MapsPlaceState extends State<MapsPlace> {
                       ),
                     ),
                     const SizedBox(
-                      height: 12,
+                      height: 8,
                     ),
                     Expanded(
                       child: Text(
@@ -577,7 +591,7 @@ class _MapsPlaceState extends State<MapsPlace> {
                             ? 'Escorpião avistado ${location.per2}'
                             : 'Acidente com escorpião ${location.per2}',
                         style: const TextStyle(
-                          fontSize: 15,
+                          fontSize: 14,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -660,12 +674,39 @@ class _MapsPlaceState extends State<MapsPlace> {
   }
 
   void addCustomMarkerYou() async {
-    BitmapDescriptor.fromAssetImage(
-            const ImageConfiguration(), 'assets/icons/tia.png')
-        .then((icon) {
-      setState(() {
-        customIcon = icon;
+    if (FirebaseAuth.instance.currentUser!.photoURL == null ||
+        FirebaseAuth.instance.currentUser!.photoURL!.isEmpty) {
+      BitmapDescriptor.fromAssetImage(
+              const ImageConfiguration(), 'assets/icons/tia.png')
+          .then((icon) {
+        if (mounted) {
+          setState(() {
+            customIcon = icon;
+          });
+        }
       });
-    });
+    } else {
+      final Uint8List markerIcon = await getBytesFromUrl(
+          FirebaseAuth.instance.currentUser!.photoURL.toString());
+
+      final BitmapDescriptor bitmapDescriptor =
+          BitmapDescriptor.fromBytes(markerIcon);
+      if (mounted) {
+        setState(() {
+          customIcon = bitmapDescriptor;
+        });
+      }
+    }
+  }
+
+  Future<Uint8List> getBytesFromUrl(String url) async {
+    final Dio dio = Dio();
+    try {
+      final response = await dio.get(url,
+          options: Options(responseType: ResponseType.bytes));
+      return response.data;
+    } catch (e) {
+      return Future.error(e);
+    }
   }
 }

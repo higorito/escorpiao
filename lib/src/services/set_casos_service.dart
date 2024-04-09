@@ -5,7 +5,7 @@ import 'package:permission_handler/permission_handler.dart';
 class SetCasosService  { 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<void> adicionarCaso(String tipo ,int per1, String per2, String? img, bool per3, per4) async {
+  Future adicionarCaso(String tipo ,int tpEscorpiao, String perto, String? img, bool ajudaMedicou, lugarPic) async {
     try {
       // Verifica e solicita permissão de localização
       if (!(await Permission.location.isGranted)) {
@@ -21,15 +21,15 @@ class SetCasosService  {
         'latLong': GeoPoint(locationData.latitude!, locationData.longitude!),
         'img': img ?? '',
         'tipo': tipo,
-        'tpEscorpiao': per1,
-        'perto-de': per2,
-        'ajuda-or-medicou': per3,
-        'lugar-picada': per4,
+        'tpEscorpiao': tpEscorpiao,
+        'perto-de': perto,
+        'ajuda-or-medicou': ajudaMedicou,
+        'lugar-picada': lugarPic,
       });
 
-      print('Caso adicionado com sucesso!');
+      return Future.value();
     } catch (e) {
-      print('Erro ao adicionar caso: $e');
+      return Future.error(e);
     }
   }
 

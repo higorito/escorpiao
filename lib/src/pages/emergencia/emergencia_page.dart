@@ -253,14 +253,29 @@ class _PageEmergenciaState extends State<PageEmergencia> {
 
   Future<void> _adicionarCaso() async {
     if (_formKey.currentState!.validate()) {
-      await SetCasosService().adicionarCaso('Emergencia', -1, _moraPerto.text,
-          null, ajudaMedicaOrMedicou, _parteCorpo);
-      showSnackbarMessage(context, 'Caso criado com sucesso');
+      setState(() {
+        isLoading = true;
+      });
+
+      try {
+        var response = await SetCasosService().adicionarCaso('Emergencia', -1,
+            _moraPerto.text, null, ajudaMedicaOrMedicou, _parteCorpo.text);
+
+        if (response == null) {
+          showSnackbarMessage(context, 'Caso criado com sucesso');
+          var nav = Navigator.of(context);
+          nav.pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => HomePage()),
+              (route) => false);
+        } else {
+          showSnackbarMessage(context, 'Erro ao criar caso');
+        }
+      } catch (e) {
+        showSnackbarMessage(context, 'Erro ao criar caso');
+      }
       setState(() {
         isLoading = false;
       });
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => HomePage()));
     }
   }
 

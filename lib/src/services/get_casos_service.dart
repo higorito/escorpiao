@@ -49,7 +49,7 @@ class GetCasosService {
         int per1 = data['tpEscorpiao'] ?? 0;
         String per2 = data['perto-de'] ?? '';
         String tipo = data['tipo'] ?? '';
-        String per3 = data['ajuda-or-medicou'] ?? '';
+        bool per3 = data['ajuda-or-medicou'] ?? false;
         String per4 = data['lugar-picada'] ?? '';
 
         // Criar uma instância de Data

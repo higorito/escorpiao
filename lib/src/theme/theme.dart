@@ -63,6 +63,15 @@ final class AppTheme {
         ),
       ),
     ),
+
+    floatingActionButtonTheme: FloatingActionButtonThemeData(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      backgroundColor: blueColor,
+      elevation: 1,
+      foregroundColor: Colors.white,
+    ),
   );
 
   static final darkTheme = ThemeData();

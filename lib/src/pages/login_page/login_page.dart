@@ -247,11 +247,12 @@ class _LoginPageState extends State<LoginPage> {
                       Navigator.of(context).pop();
                       
 
-                      Navigator.pushReplacement(context,
-                          MaterialPageRoute(builder: (context) => HomePage()));
-                    
-                      // Navigator.pushReplacement(context,
-                      //     MaterialPageRoute(builder: (context) => HomePage()));
+                      final nav =  Navigator.of(context);
+
+                      nav.pushReplacement(MaterialPageRoute(builder: (context) {
+                        return HomePage();
+                      }));
+
                     },
                     child: Container(
                       decoration: BoxDecoration(

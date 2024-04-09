@@ -6,7 +6,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-
 class FirebaseImageUploader extends StatefulWidget {
   const FirebaseImageUploader({super.key});
 
@@ -19,11 +18,13 @@ class _FirebaseImageUploaderState extends State<FirebaseImageUploader> {
   final ImagePicker _picker = ImagePicker();
   AppState appState = AppState();
 
+  bool isLoading = false;
+
   Future<void> _getImageFromGallery() async {
     // PermissionManager.requestCameraAndGalleryPermission(context);
 
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-     
+
     setState(() {
       if (pickedFile != null) {
         _imageFile = File(pickedFile.path);
@@ -35,7 +36,7 @@ class _FirebaseImageUploaderState extends State<FirebaseImageUploader> {
 
   Future<void> _getImageFromCamera() async {
     // PermissionManager.requestCameraAndGalleryPermission(context); arrumar
-    
+
     final pickedFile = await _picker.pickImage(source: ImageSource.camera);
 
     setState(() {
@@ -65,7 +66,7 @@ class _FirebaseImageUploaderState extends State<FirebaseImageUploader> {
       await uploadTask.whenComplete(() {
         appState.fotoCarregada = true;
         Navigator.pop(context);
-      } );
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Imagem enviada com sucesso para o Firebase Storage!'),
@@ -79,6 +80,9 @@ class _FirebaseImageUploaderState extends State<FirebaseImageUploader> {
           backgroundColor: Colors.redAccent,
         ),
       );
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -121,11 +125,11 @@ class _FirebaseImageUploaderState extends State<FirebaseImageUploader> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               ElevatedButton(
-                onPressed: () => _getImageFromGallery(),
+                onPressed: () async => await _getImageFromGallery(),
                 child: const Text('Galeria'),
               ),
               ElevatedButton(
-                onPressed: () => _getImageFromCamera(),
+                onPressed: () async => await _getImageFromCamera(),
                 child: const Text('Câmera'),
               ),
             ],
@@ -134,9 +138,21 @@ class _FirebaseImageUploaderState extends State<FirebaseImageUploader> {
           SizedBox(
             width: size.width * 0.7,
             height: 48,
-            child: ElevatedButton(
-              onPressed: () => _uploadImageToFirebase(context),
-              child: const Text('Salvar Imagem '),
+            child: Builder(
+              builder: (context) {
+                return ElevatedButton(
+                  onPressed: () async {
+                    setState(() {
+                      isLoading = true;
+                    });
+                    await _uploadImageToFirebase(context);
+                    setState(() {
+                      isLoading = false;
+                    });
+                  },
+                  child: isLoading? const CircularProgressIndicator(): const Text('Salvar Imagem '),
+                );
+              }
             ),
           ),
         ],

@@ -44,7 +44,6 @@ class _NovoCasoSimplificadoPageState extends State<NovoCasoSimplificadoPage> {
     'https://kelldrin.com.br/wp-content/uploads/2022/08/escorpiao.jpg',
     'https://static.mundoeducacao.uol.com.br/mundoeducacao/conteudo_legenda/fa48f290f347a1a53553286d51baf118.jpg',
     'https://www.biomax-mep.com.br/wp-content/webp-express/webp-images/uploads/2012/05/escorpiao-filhotes.jpg.webp',
-    
   ];
 
   final FirebaseImageUploader uploadImageService =
@@ -81,33 +80,39 @@ class _NovoCasoSimplificadoPageState extends State<NovoCasoSimplificadoPage> {
                 const SizedBox(
                   height: 10,
                 ),
-                Builder(
-                  builder: (context) {
-                    return Visibility(
-                      visible: !appState.fotoCarregada!,
-                      child: SizedBox(
-                        height: size.height * 0.13,
-                        width: size.width * 0.4,
-                        child: DocumentBoxWidget(
-                          icon: Image.asset('assets/icons/photo-camera.png'),
-                          labels: 'Foto do local',
-                          uploaded: false,
-                          onTap: () {
-                            showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                      title: const Text('Envie sua Imagem'),
-                                      content: SizedBox(
-                                          width: size.width * 0.9,
-                                          height: size.height * 0.5,
-                                          child: const FirebaseImageUploader()),
-                                    ));
-                          },
-                        ),
+                Builder(builder: (context) {
+                  return Visibility(
+                    visible: !appState.fotoCarregada!,
+                    child: SizedBox(
+                      height: size.height * 0.13,
+                      width: size.width * 0.4,
+                      child: DocumentBoxWidget(
+                        icon: Image.asset('assets/icons/photo-camera.png'),
+                        labels: 'Foto do local',
+                        uploaded: false,
+                        onTap: () async{
+                          if (appState.fotoCarregada!) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Você já enviou uma imagem.'),
+                              ),
+                            );
+                            return;
+                          }
+                          showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                    title: const Text('Envie sua Imagem'),
+                                    content: SizedBox(
+                                        width: size.width * 0.9,
+                                        height: size.height * 0.5,
+                                        child: FirebaseImageUploader()),
+                                  ));
+                        },
                       ),
-                    );
-                  }
-                ),
+                    ),
+                  );
+                }),
                 const SizedBox(
                   height: 16,
                 ),
