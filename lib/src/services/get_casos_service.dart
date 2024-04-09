@@ -46,9 +46,11 @@ class GetCasosService {
         // Extrair os dados relevantes do snapshot
         String img = data['img'] ?? '';
         GeoPoint latLong = data['latLong'] ?? GeoPoint(0, 0);
-        int per1 = data['per1'] ?? 0;
-        String per2 = data['per2'] ?? '';
+        int per1 = data['tpEscorpiao'] ?? 0;
+        String per2 = data['perto-de'] ?? '';
         String tipo = data['tipo'] ?? '';
+        String per3 = data['ajuda-or-medicou'] ?? '';
+        String per4 = data['lugar-picada'] ?? '';
 
         // Criar uma instância de Data
         Data newData = Data(
@@ -57,6 +59,8 @@ class GetCasosService {
           per1: per1,
           per2: per2,
           tipo: tipo,
+          per3: per3,
+          per4: per4,
         );
 
         // Retornar uma lista contendo esse objeto Data

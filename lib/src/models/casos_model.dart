@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 //TODO: MUDAR UM POUCO AQUI
 class Data {
   String img;
@@ -13,6 +14,8 @@ class Data {
     required this.per1,
     required this.per2,
     required this.tipo,
+    required String per3,
+    required String per4,
   });
 
   factory Data.fromFirestore(DocumentSnapshot doc) {
@@ -23,6 +26,8 @@ class Data {
       per1: data['per1'] ?? 0,
       per2: data['per2'] ?? '',
       tipo: data['tipo'] ?? '',
+      per3: '',
+      per4: '',
     );
   }
 }
