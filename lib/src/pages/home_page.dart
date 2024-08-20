@@ -89,15 +89,15 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
           ),
-          ListTile(
-            title: const Text('Configurações'),
-            onTap: () {
-              // Update the state of the app
-              // ...
-              // Then close the drawer
-              Navigator.pop(context);
-            },
-          ),
+          // ListTile(
+          //   title: const Text('Configurações'),
+          //   onTap: () {
+          //     // Update the state of the app
+          //     // ...
+          //     // Then close the drawer
+          //     Navigator.pop(context);
+          //   },
+          // ),
           ListTile(
             title: const Text('Sobre nós'),
             onTap: () {
@@ -193,9 +193,9 @@ class _HomePageState extends State<HomePage> {
   final List<String> ListImages = [
     'https://www.saude.ce.gov.br/wp-content/uploads/sites/9/2020/12/Banner_CB_Capa_cuidados-basicos-escorpiao_09-12-20.png',
     'https://palotina.pr.gov.br/uploads/articles/2023-03/escorpioes-prevencao-ainda-e-a-melhor-solucao-para-evitar-acidentes-3f2e1b09a7.jpeg',
-    'https://scontent.fvag4-1.fna.fbcdn.net/v/t1.6435-9/80327540_2884569578220844_2339922092943736832_n.png?stp=dst-png_p526x296&_nc_cat=105&ccb=1-7&_nc_sid=5f2048&_nc_ohc=-xBhM9h7adgAX8_QZba&_nc_ht=scontent.fvag4-1.fna&oh=00_AfDhV1GhUQKds_y6CdEKDBdFFlEwrgjAs6ZRwNhXUfw1Mw&oe=663005FD',
     'https://www.extrema.mg.gov.br/wp-content/uploads/2020/01/escorpi%C3%A3o-700x500.jpg',
     'https://guaratingueta.sp.gov.br/wp-content/uploads/2022/08/escorpianismo-800x445.jpg',
+    'https://image.portaldacidade.com/unsafe/https://bucket.portaldacidade.com/riodaspedras.portaldacidade.com/img/news/2022-08/secretaria-de-saude-alerta-para-a-alta-incidencia-de-ataque-de-escorpiao-630773127c438.jpeg'
   ];
 
   @override
@@ -243,7 +243,8 @@ class _HomePageState extends State<HomePage> {
                   height: size.height * 0.23,
                   width: double.infinity,
                   child: ExpandableCarousel(
-                    options: CarouselOptions(
+                    options: ExpandableCarouselOptions (
+                      
                       autoPlay: true,
                       autoPlayInterval: const Duration(seconds: 5),
                     ),
@@ -361,7 +362,7 @@ class _HomePageState extends State<HomePage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Adicionar novo caso',
+                                  'Registro de avistamento',
                                   style: TextStyle(
                                       fontSize: 22,
                                       fontWeight: FontWeight.bold,

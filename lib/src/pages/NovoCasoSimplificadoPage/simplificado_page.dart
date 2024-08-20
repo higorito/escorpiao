@@ -74,7 +74,7 @@ class _NovoCasoSimplificadoPageState extends State<NovoCasoSimplificadoPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text('Aonde você viu:',
+                const Text('Inclua aqui uma foto do local onde o escorpião foi visto:',
                     style:
                         TextStyle(fontWeight: FontWeight.w500, fontSize: 16)),
                 const SizedBox(
@@ -116,7 +116,7 @@ class _NovoCasoSimplificadoPageState extends State<NovoCasoSimplificadoPage> {
                 const SizedBox(
                   height: 16,
                 ),
-                const Text('Selecione o tipo de Escorpião (clique)',
+                const Text('Selecione a imagem que se assemelha com o que você viu:',
                     style:
                         TextStyle(fontWeight: FontWeight.w500, fontSize: 16)),
                 const SizedBox(
@@ -206,7 +206,7 @@ class _NovoCasoSimplificadoPageState extends State<NovoCasoSimplificadoPage> {
                   height: 10,
                 ),
                 const Text(
-                    'Sua localização atual será enviada junto com o caso.',
+                    'Sua localização será enviada junto com o caso.',
                     style: TextStyle(fontWeight: FontWeight.w500)),
                 const SizedBox(height: 10),
                 const Text('Verifique as informações antes de continuar:'),

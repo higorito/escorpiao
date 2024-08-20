@@ -186,7 +186,7 @@ class _LoginPageState extends State<LoginPage> {
                     height: 48,
                     child: OutlinedButton(
                       style: OutlinedButton.styleFrom(
-                        primary: Colors.white,
+                        foregroundColor: Colors.white,
                         backgroundColor: AppTheme.blueColor,
                       ),
                       onPressed: () {

@@ -12,7 +12,7 @@ class FirebaseImageDownloader {
 
       return imageData;
     } catch (e) {
-      print('Erro ao obter imagem do Firebase Storage: $e');
+      print('Erro ao obter imagem!');
       return null;
     }
   }

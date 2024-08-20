@@ -36,7 +36,7 @@ class _PageEmergenciaState extends State<PageEmergencia> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text('Aonde foi picado?',
+                const Text('Em qual local você foi picado?',
                     style:
                         TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                 const SizedBox(height: 10),
@@ -83,7 +83,7 @@ class _PageEmergenciaState extends State<PageEmergencia> {
                 ),
                 const SizedBox(height: 10),
                 //sim ou nao
-                const Text('Se automedicou ou procurou ajuda médica?',
+                const Text('Você procurou assistência médica?',
                     style:
                         TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                 const SizedBox(height: 10),
@@ -223,8 +223,8 @@ class _PageEmergenciaState extends State<PageEmergencia> {
                   height: size.height * 0.06,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.blue,
-                      onPrimary: Colors.white,
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
                     ),
                     onPressed: () {
                       Navigator.push(

@@ -68,15 +68,15 @@ class _FirebaseImageUploaderState extends State<FirebaseImageUploader> {
         Navigator.pop(context);
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Imagem enviada com sucesso para o Firebase Storage!'),
+        const SnackBar(
+          content: Text('Imagem salva com sucesso!'),
           backgroundColor: Colors.green,
         ),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erro ao enviar imagem para o Firebase Storage: $e'),
+        const SnackBar(
+          content: Text('Erro ao salvar imagem!'),
           backgroundColor: Colors.redAccent,
         ),
       );
